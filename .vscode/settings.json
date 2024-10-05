@@ -1,0 +1,7 @@
+{
+    "clangd.fallbackFlags": [
+        "-IE:\\OpenCV\\opencv4.5.2\\build\\include"
+    ],
+    "Lingma.cloudModelAutoTriggerDisplayRule": false,
+    "Lingma.methodQuickOperation": false
+}
