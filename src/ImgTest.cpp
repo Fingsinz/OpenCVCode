@@ -1,4 +1,4 @@
-#include "ImgTest.hpp"
+﻿#include "ImgTest.hpp"
 #include "ImgProcessor.hpp"
 #include "opencv2/core/mat.hpp"
 #include "opencv2/highgui.hpp"
@@ -25,5 +25,11 @@ void ImgTest::ShowResult() {
 }
 
 void ImgTest::TestGrayInversion() {
+    dst.release();
     ImgProcessor::GrayInversion(src, dst);
+}
+
+void ImgTest::TestGrayLogTrans() {
+    dst.release();
+    ImgProcessor::GrayLogTrans(src, dst, 5.0);
 }
