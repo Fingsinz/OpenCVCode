@@ -2,7 +2,7 @@
 
 int main(int argc, char const *argv[]) {;
     ImgTest::GetSrc();
-    ImgTest::TestGrayLogTrans();
+    ImgTest::TestGrayGammaTrans();
     ImgTest::ShowResult();
     return 0;
 }

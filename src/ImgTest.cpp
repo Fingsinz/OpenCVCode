@@ -33,3 +33,8 @@ void ImgTest::TestGrayLogTrans() {
     dst.release();
     ImgProcessor::GrayLogTrans(src, dst, 5.0);
 }
+
+void ImgTest::TestGrayGammaTrans() {
+    dst.release();
+    ImgProcessor::GrayGammaTrans(src, dst, 3.0, 0.9);
+}
