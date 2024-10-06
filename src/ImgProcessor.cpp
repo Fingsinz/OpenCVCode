@@ -1,8 +1,12 @@
 ﻿#include "ImgProcessor.hpp"
 #include "opencv2/core.hpp"
+#include "opencv2/core/base.hpp"
 #include "opencv2/core/hal/interface.h"
 #include "opencv2/core/mat.hpp"
+#include "opencv2/core/matx.hpp"
+#include "opencv2/core/saturate.hpp"
 #include "opencv2/imgproc.hpp"
+#include <random>
 
 void ImgProcessor::GrayInversion(cv::Mat const &src, cv::Mat &dst) {
     cv::Mat tmp;
@@ -170,4 +174,58 @@ void ImgProcessor::HistMatch(cv::Mat const &src, cv::Mat const &pattern, cv::Mat
     }
 
     cv::LUT(equalizeHist1, lut, dst);
+}
+
+void ImgProcessor::AddSaltNoice(cv::Mat &iSrc, int iNum) {
+    std::default_random_engine generator;
+    std::uniform_int_distribution<int> randomRow(0, iSrc.rows - 1);
+    std::uniform_int_distribution<int> randomCol(0, iSrc.cols - 1);
+
+    for (int k = 0; k < iNum; ++k) {
+        int i = randomRow(generator);
+        int j = randomCol(generator);
+        if (iSrc.channels() == 3) {
+            iSrc.at<cv::Vec3b>(i, j) = cv::Vec3b(255, 255, 255);
+        } else if (iSrc.channels() == 1) {
+            iSrc.at<uchar>(i, j) = 255;
+        }
+    }
+}
+
+void ImgProcessor::MeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, int iFilterSize) {
+    oDst = iSrc.clone();
+    int k = (iFilterSize - 1) / 2;
+    cv::copyMakeBorder(iSrc, oDst, k, k, k, k, cv::BORDER_REFLECT);
+
+    if (iSrc.channels() == 3) {
+        for (int i = k; i < oDst.rows - k; i++) {
+            for (int j = k; j < oDst.cols - k; j++) {
+                cv::Vec3i sum{0, 0, 0};
+                // 卷积过程
+                for (int x = -k; x <= k; x++) {
+                    for (int y = -k; y <= k; y++) {
+                        sum += oDst.at<cv::Vec3b>(i + x, j + y);
+                    }
+                }
+                oDst.at<cv::Vec3b>(i, j) = cv::Vec3b(
+                    cv::saturate_cast<uchar>(sum[0] / (iFilterSize * iFilterSize)),
+                    cv::saturate_cast<uchar>(sum[1] / (iFilterSize * iFilterSize)),
+                    cv::saturate_cast<uchar>(sum[2] / (iFilterSize * iFilterSize)));
+            }
+        }
+    } else if (iSrc.channels() == 1) {
+        for (int i = k; i < oDst.rows - k; i++) {
+            for (int j = k; j < oDst.cols - k; j++) {
+                int sum = 0;
+                for (int x = -k; x <= k; x++) {
+                    for (int y = -k; y <= k; y++) {
+                        sum += oDst.at<uchar>(i + x, j + y);
+                    }
+                }
+                oDst.at<uchar>(i, j) = cv::saturate_cast<uchar>(sum / (iFilterSize * iFilterSize));
+            }
+        }
+    }
+    
+    oDst = oDst(cv::Rect(k, k, iSrc.cols, iSrc.rows));
 }

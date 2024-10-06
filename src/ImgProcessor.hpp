@@ -55,4 +55,21 @@ public:
      * @param[out] dst 匹配后的图像
      */
     static void HistMatch(cv::Mat const &src, cv::Mat const &pattern, cv::Mat &dst);
+
+    /**
+     * @brief 添加椒盐噪声
+     * @details
+     * @param[in,out] iSrc 输入图像
+     * @param[in] iNum 椒盐噪声的个数
+     */
+    static void AddSaltNoice(cv::Mat &iSrc, int iNum);
+
+    /**
+     * @brief 均值滤波
+     * @details
+     * @param[in] iSrc 输入图像
+     * @param[out] oDst 输出图像
+     * @param[in] iFilterSize 滤波器的 size
+     */
+    static void MeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, int iFilterSize);
 };

@@ -21,6 +21,9 @@ public:
     static void TestHistEqualization();
     static void TestHistMatch();
 
+    // 低通空间滤波器
+    static void TestMeanFilter();
+
 private:
     static cv::Mat src;
     static cv::Mat dst;

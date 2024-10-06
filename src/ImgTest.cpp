@@ -4,6 +4,7 @@
 #include "opencv2/core/types.hpp"
 #include "opencv2/highgui.hpp"
 #include "opencv2/imgcodecs.hpp"
+#include "opencv2/imgproc.hpp"
 
 cv::Mat ImgTest::src;
 cv::Mat ImgTest::dst;
@@ -61,4 +62,16 @@ void ImgTest::TestHistMatch() {
     cv::Mat pattern(src.size(), CV_8UC1, cv::Scalar(255));
     ImgProcessor::HistMatch(src, pattern, dst);
     cv::imshow("pattern", pattern);
+}
+
+void ImgTest::TestMeanFilter() {
+    dst.release();
+    ImgProcessor::AddSaltNoice(src, 5000);
+    
+    ImgProcessor::MeanFilter(src, dst, 5);
+    
+    cv::Mat tmp;
+    // OpenCV 内置函数
+    cv::blur(src, tmp, cv::Size(5, 5));
+    cv::imshow("blur", tmp);
 }
