@@ -16,6 +16,10 @@ public:
     static void TestGrayLogTrans();
     static void TestGrayGammaTrans();
 
+    // 直方图
+    static void TestGetHistogram();
+    static void TestHistEqualization();
+
 private:
     static cv::Mat src;
     static cv::Mat dst;

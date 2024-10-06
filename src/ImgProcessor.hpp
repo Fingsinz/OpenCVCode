@@ -31,4 +31,20 @@ public:
      * @param[in] gamma gamma 值
      */
     static void GrayGammaTrans(cv::Mat const &src, cv::Mat &dst, double c = 1.0, double gamma = 1.0);
+
+    /**
+     * @brief 获取src的直方图
+     * @details
+     * @param[in] src 输入图像
+     * @param[out] dst 直方图
+     */
+    static void GetHistogram(cv::Mat const &src, cv::Mat &dst);
+
+    /**
+     * @brief 直方图均衡化
+     * @details
+     * @param[in] src 输入图像
+     * @param[out] dst均衡化后的图像
+     */
+    static void HistEqualization(cv::Mat const &src, cv::Mat &dst);
 };

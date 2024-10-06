@@ -38,3 +38,19 @@ void ImgTest::TestGrayGammaTrans() {
     dst.release();
     ImgProcessor::GrayGammaTrans(src, dst, 3.0, 0.9);
 }
+
+void ImgTest::TestGetHistogram() {
+    dst.release();
+    ImgProcessor::GetHistogram(src, dst);
+}
+
+void ImgTest::TestHistEqualization() {
+    dst.release();
+    ImgProcessor::HistEqualization(src, dst);
+
+    cv::Mat hist1, hist2;
+    ImgProcessor::GetHistogram(src, hist1);
+    ImgProcessor::GetHistogram(dst, hist2);
+    cv::imshow("hist1", hist1);
+    cv::imshow("hist2", hist2);
+}
