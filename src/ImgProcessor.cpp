@@ -226,6 +226,58 @@ void ImgProcessor::MeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, int iFilterSiz
             }
         }
     }
+
+    oDst = oDst(cv::Rect(k, k, iSrc.cols, iSrc.rows));
+}
+
+void ImgProcessor::GaussianFilter(
+    cv::Mat const &iSrc,
+    cv::Mat &oDst,
+    int iFilterSize,
+    double iSigmaX,
+    double iSigmaY /*= 0.0*/) {
+
+    oDst = iSrc.clone();
+    int k = (iFilterSize - 1) / 2;
+    cv::copyMakeBorder(iSrc, oDst, k, k, k, k, cv::BORDER_REFLECT);
+
+    if (iSrc.channels() == 3) {
+        for (int i = k; i < oDst.rows - k; i++) {
+            for (int j = k; j < oDst.cols - k; j++) {
+                cv::Vec3d sum{0.0, 0.0, 0.0};
+                double g;
+                double sumG = 0.0;
+                // 卷积过程
+                for (int x = -k; x <= k; x++) {
+                    for (int y = -k; y <= k; y++) {
+                        g = exp(-(x * x + y * y) / (2 * iSigmaX * iSigmaX));
+                        sumG += g;
+                        sum += oDst.at<cv::Vec3b>(i + x, j + y) * g;
+                    }
+                }
+                oDst.at<cv::Vec3b>(i, j) = cv::Vec3b(
+                    cv::saturate_cast<uchar>(sum[0] / sumG),
+                    cv::saturate_cast<uchar>(sum[1] / sumG),
+                    cv::saturate_cast<uchar>(sum[2] / sumG));
+            }
+        }
+    } else if (iSrc.channels() == 1) {
+        for (int i = k; i < oDst.rows - k; i++) {
+            for (int j = k; j < oDst.cols - k; j++) {
+                double sum = 0.0;
+                double g;
+                double sumG = 0.0;
+                for (int x = -k; x <= k; x++) {
+                    for (int y = -k; y <= k; y++) {
+                        g = exp(-(x * x + y * y) / (2 * iSigmaX * iSigmaX));
+                        sumG += g;
+                        sum += oDst.at<uchar>(i + x, j + y) * g;
+                    }
+                }
+                oDst.at<uchar>(i, j) = cv::saturate_cast<uchar>(sum / sumG);
+            }
+        }
+    }
     
     oDst = oDst(cv::Rect(k, k, iSrc.cols, iSrc.rows));
 }

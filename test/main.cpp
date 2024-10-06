@@ -2,7 +2,7 @@
 
 int main(int argc, char const *argv[]) {;
     ImgTest::GetSrc();
-    ImgTest::TestMeanFilter();
+    ImgTest::TestGaussianFilter();
     ImgTest::ShowResult();
     return 0;
 }

@@ -23,6 +23,7 @@ public:
 
     // 低通空间滤波器
     static void TestMeanFilter();
+    static void TestGaussianFilter();
 
 private:
     static cv::Mat src;

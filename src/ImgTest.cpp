@@ -75,3 +75,15 @@ void ImgTest::TestMeanFilter() {
     cv::blur(src, tmp, cv::Size(5, 5));
     cv::imshow("blur", tmp);
 }
+
+void ImgTest::TestGaussianFilter() {
+    dst.release();
+    ImgProcessor::AddSaltNoice(src, 5000);
+
+    ImgProcessor::GaussianFilter(src, dst, 5, 7.0);
+    
+    cv::Mat tmp;
+    // OpenCV 内置函数
+    cv::GaussianBlur(src, tmp, cv::Size(5, 5), 7.0);
+    cv::imshow("Gaussian blur", tmp);
+}

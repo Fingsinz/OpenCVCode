@@ -72,4 +72,20 @@ public:
      * @param[in] iFilterSize 滤波器的 size
      */
     static void MeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, int iFilterSize);
+
+    /**
+     * @brief 高斯滤波
+     * @details
+     * @param[in] iSrc 输入图像
+     * @param[out] oDst 输出图像
+     * @param[in] iFilterSize 滤波器的 size
+     * @param[in] iSigmaX 高斯分布X的标准差
+     * @param[in] iSigmaY 高斯分布Y的标准差，不使用
+     */
+    static void GaussianFilter(
+        cv::Mat const &iSrc,
+        cv::Mat &oDst,
+        int iFilterSize,
+        double iSigmaX,
+        double iSigmaY = 0.0);
 };
