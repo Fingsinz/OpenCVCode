@@ -67,9 +67,9 @@ void ImgTest::TestHistMatch() {
 void ImgTest::TestMeanFilter() {
     dst.release();
     ImgProcessor::AddSaltNoice(src, 5000);
-    
+
     ImgProcessor::MeanFilter(src, dst, 5);
-    
+
     cv::Mat tmp;
     // OpenCV 内置函数
     cv::blur(src, tmp, cv::Size(5, 5));
@@ -81,9 +81,21 @@ void ImgTest::TestGaussianFilter() {
     ImgProcessor::AddSaltNoice(src, 5000);
 
     ImgProcessor::GaussianFilter(src, dst, 5, 7.0);
-    
+
     cv::Mat tmp;
     // OpenCV 内置函数
     cv::GaussianBlur(src, tmp, cv::Size(5, 5), 7.0);
     cv::imshow("Gaussian blur", tmp);
+}
+
+void ImgTest::TestMedianFilter() {
+    dst.release();
+    ImgProcessor::AddSaltNoice(src, 5000);
+
+    ImgProcessor::MedianFilter(src, dst, 5);
+
+    cv::Mat tmp;
+    // OpenCV 内置函数
+    cv::medianBlur(src, tmp, 5);
+    cv::imshow("median blur", tmp);
 }

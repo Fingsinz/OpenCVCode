@@ -7,6 +7,7 @@
 #include "opencv2/core/saturate.hpp"
 #include "opencv2/imgproc.hpp"
 #include <random>
+#include <vector>
 
 void ImgProcessor::GrayInversion(cv::Mat const &src, cv::Mat &dst) {
     cv::Mat tmp;
@@ -278,6 +279,48 @@ void ImgProcessor::GaussianFilter(
             }
         }
     }
-    
+
+    oDst = oDst(cv::Rect(k, k, iSrc.cols, iSrc.rows));
+}
+
+void ImgProcessor::MedianFilter(cv::Mat const &iSrc, cv::Mat &oDst, int iFilterSize) {
+    oDst = iSrc.clone();
+    int k = (iFilterSize - 1) / 2;
+    cv::copyMakeBorder(iSrc, oDst, k, k, k, k, cv::BORDER_REFLECT);
+
+    if (iSrc.channels() == 3) {
+        std::vector<cv::Vec3b> tmp(iFilterSize * iFilterSize);
+
+        for (int i = k; i < oDst.rows - k; i++) {
+            for (int j = k; j < oDst.cols - k; j++) {
+                tmp.clear();
+                for (int x = -k; x <= k; x++) {
+                    for (int y = -k; y <= k; y++) {
+                        tmp.push_back(oDst.at<cv::Vec3b>(i + x, j + y));
+                    }
+                }
+                std::sort(tmp.begin(), tmp.end(), [&](cv::Vec3b a, cv::Vec3b b) {
+                    return a[0] + a[1] + a[2] < b[0] + b[1] + b[2];
+                });
+                oDst.at<cv::Vec3b>(i, j) = tmp[tmp.size() / 2];
+            }
+        }
+    } else if (iSrc.channels() == 1) {
+        std::vector<uchar> tmp(iFilterSize * iFilterSize);
+
+        for (int i = k; i < oDst.rows - k; i++) {
+            for (int j = k; j < oDst.cols - k; j++) {
+                tmp.clear();
+                for (int x = -k; x <= k; x++) {
+                    for (int y = -k; y <= k; y++) {
+                        tmp.push_back(oDst.at<uchar>(i + x, j + y));
+                    }
+                }
+                std::sort(tmp.begin(), tmp.end());
+                oDst.at<uchar>(i, j) = tmp[tmp.size() / 2];
+            }
+        }
+    }
+
     oDst = oDst(cv::Rect(k, k, iSrc.cols, iSrc.rows));
 }

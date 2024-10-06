@@ -88,4 +88,13 @@ public:
         int iFilterSize,
         double iSigmaX,
         double iSigmaY = 0.0);
+
+    /**
+     * @brief 中值滤波
+     * @details
+     * @param[in] iSrc 输入图像
+     * @param[out] oDst 输出图像
+     * @param[in] iFilterSize 滤波器的 size
+     */
+    static void MedianFilter(cv::Mat const &iSrc, cv::Mat &oDst, int iFilterSize);
 };
