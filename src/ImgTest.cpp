@@ -1,6 +1,7 @@
 ﻿#include "ImgTest.hpp"
 #include "ImgProcessor.hpp"
 #include "opencv2/core/mat.hpp"
+#include "opencv2/core/types.hpp"
 #include "opencv2/highgui.hpp"
 #include "opencv2/imgcodecs.hpp"
 
@@ -53,4 +54,11 @@ void ImgTest::TestHistEqualization() {
     ImgProcessor::GetHistogram(dst, hist2);
     cv::imshow("hist1", hist1);
     cv::imshow("hist2", hist2);
+}
+
+void ImgTest::TestHistMatch() {
+    dst.release();
+    cv::Mat pattern(src.size(), CV_8UC1, cv::Scalar(255));
+    ImgProcessor::HistMatch(src, pattern, dst);
+    cv::imshow("pattern", pattern);
 }

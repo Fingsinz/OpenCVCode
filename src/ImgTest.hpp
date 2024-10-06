@@ -19,6 +19,7 @@ public:
     // 直方图
     static void TestGetHistogram();
     static void TestHistEqualization();
+    static void TestHistMatch();
 
 private:
     static cv::Mat src;

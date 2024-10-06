@@ -1,9 +1,8 @@
 ﻿#include "ImgProcessor.hpp"
 #include "opencv2/core.hpp"
 #include "opencv2/core/hal/interface.h"
-#include "opencv2/highgui.hpp"
+#include "opencv2/core/mat.hpp"
 #include "opencv2/imgproc.hpp"
-#include <iostream>
 
 void ImgProcessor::GrayInversion(cv::Mat const &src, cv::Mat &dst) {
     cv::Mat tmp;
@@ -21,7 +20,7 @@ void ImgProcessor::GrayInversion(cv::Mat const &src, cv::Mat &dst) {
     }
 }
 
-void ImgProcessor::GrayLogTrans(const cv::Mat &src, cv::Mat &dst, double c /*= 1.0*/) {
+void ImgProcessor::GrayLogTrans(cv::Mat const &src, cv::Mat &dst, double c /*= 1.0*/) {
     cv::Mat tmp;
     if (src.channels() == 3) {
         cv::cvtColor(src, tmp, cv::COLOR_BGR2GRAY);
@@ -41,7 +40,7 @@ void ImgProcessor::GrayLogTrans(const cv::Mat &src, cv::Mat &dst, double c /*= 1
     cv::normalize(dst, dst, 0, 255, cv::NORM_MINMAX, CV_8UC1);
 }
 
-void ImgProcessor::GrayGammaTrans(const cv::Mat &src, cv::Mat &dst, double c /*= 1.0*/, double gamma /*= 1.0*/) {
+void ImgProcessor::GrayGammaTrans(cv::Mat const &src, cv::Mat &dst, double c /*= 1.0*/, double gamma /*= 1.0*/) {
     cv::Mat tmp;
     if (src.channels() == 3) {
         cv::cvtColor(src, tmp, cv::COLOR_BGR2GRAY);
@@ -95,7 +94,7 @@ void ImgProcessor::GetHistogram(cv::Mat const &src, cv::Mat &dst) {
     }
 }
 
-void ImgProcessor::HistEqualization(const cv::Mat &src, cv::Mat &dst) {
+void ImgProcessor::HistEqualization(cv::Mat const &src, cv::Mat &dst) {
     cv::Mat tmp;
     if (src.channels() == 3) {
         cv::cvtColor(src, tmp, cv::COLOR_BGR2GRAY);
@@ -105,4 +104,70 @@ void ImgProcessor::HistEqualization(const cv::Mat &src, cv::Mat &dst) {
 
     // 直方图均衡化
     cv::equalizeHist(tmp, dst);
+}
+
+void ImgProcessor::HistMatch(cv::Mat const &src, cv::Mat const &pattern, cv::Mat &dst) {
+    cv::Mat tmp;
+    if (src.channels() == 3) {
+        cv::cvtColor(src, tmp, cv::COLOR_BGR2GRAY);
+    } else if (src.channels() == 1) {
+        tmp = src;
+    }
+
+    cv::Mat _pattern;
+    if (pattern.channels() == 3) {
+        cv::cvtColor(pattern, _pattern, cv::COLOR_BGR2GRAY);
+    } else if (pattern.channels() == 1) {
+        _pattern = pattern;
+    }
+
+    cv::Mat equalizeHist1, equalizeHist2;
+    // 图像1和图像2进行均衡化
+    cv::equalizeHist(tmp, equalizeHist1);
+    cv::equalizeHist(_pattern, equalizeHist2);
+
+    // 求图像1和图像2均衡化后的直方图
+    cv::Mat hist1, hist2;
+    int hSize = 256;
+    float ranges[] = {0, 256};
+    const float *hranges = {ranges};
+    cv::calcHist(&equalizeHist1, 1, 0, cv::Mat(), hist1, 1, &hSize, &hranges, true, false);
+    cv::calcHist(&equalizeHist2, 1, 0, cv::Mat(), hist2, 1, &hSize, &hranges, true, false);
+
+    // 计算两个均衡化图像直方图的累积概率
+    float hist1Rate[256] = {hist1.at<float>(0)};
+    float hist2Rate[256] = {hist2.at<float>(0)};
+    for (int i = 1; i < 256; i++) {
+        hist1Rate[i] = hist1Rate[i - 1] + hist1.at<float>(i);
+        hist2Rate[i] = hist2Rate[i - 1] + hist2.at<float>(i);
+    }
+
+    for (int i = 0; i < 256; i++) {
+        hist1Rate[i] /= (equalizeHist1.rows * equalizeHist1.cols);
+        hist2Rate[i] /= (equalizeHist2.rows * equalizeHist2.cols);
+    }
+
+    // 两个累计概率之间的差值，用于找到最接近的点
+    float diff[256][256];
+    for (int i = 0; i < 256; i++) {
+        for (int j = 0; j < 256; j++) {
+            diff[i][j] = fabs(hist1Rate[i] - hist2Rate[j]);
+        }
+    }
+
+    cv::Mat lut(1, 256, CV_8U);
+    for (int i = 0; i < 256; i++) {
+        // 查找源灰度级为i的映射灰度和i的累积概率差最小(灰度接近)的规定化灰度
+        float min = diff[i][0];
+        int idx = 0;
+        for (int j = 0; j < 256; j++) {
+            if (min > diff[i][j]) {
+                min = diff[i][j];
+                idx = j;
+            }
+        }
+        lut.at<uchar>(i) = idx;
+    }
+
+    cv::LUT(equalizeHist1, lut, dst);
 }

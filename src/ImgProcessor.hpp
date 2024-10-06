@@ -21,7 +21,6 @@ public:
      */
     static void GrayLogTrans(cv::Mat const &src, cv::Mat &dst, double c = 1.0);
 
-
     /**
      * @brief 灰度 gamma 变换，扩展图像中的暗像素值，压缩高灰度值
      * @details y = c * x ^ gamma
@@ -47,4 +46,13 @@ public:
      * @param[out] dst均衡化后的图像
      */
     static void HistEqualization(cv::Mat const &src, cv::Mat &dst);
+
+    /**
+     * @brief 直方图匹配
+     * @details
+     * @param[in] src 输入图像
+     * @param[in] pattern 模板图像
+     * @param[out] dst 匹配后的图像
+     */
+    static void HistMatch(cv::Mat const &src, cv::Mat const &pattern, cv::Mat &dst);
 };
