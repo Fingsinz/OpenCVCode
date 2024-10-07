@@ -1,5 +1,4 @@
 ﻿#include "ImgProcessor.hpp"
-#include "ImgTest.hpp"
 #include "opencv2/core.hpp"
 #include "opencv2/core/base.hpp"
 #include "opencv2/core/hal/interface.h"
@@ -573,6 +572,53 @@ void ImgProcessor::HarmonicMeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Si
                     }
                 }
                 sum = static_cast<double>(area) / sum;
+                oDst.at<uchar>(i, j) = cv::saturate_cast<uchar>(sum);
+            }
+        }
+    }
+
+    oDst = oDst(cv::Rect(m, n, iSrc.cols, iSrc.rows));
+}
+
+void ImgProcessor::AntiHarmonicMeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize, double q /*= 0*/) {
+    int m = (iFilterSize.height - 1) / 2;
+    int n = (iFilterSize.width - 1) / 2;
+    int area = iFilterSize.area();
+    cv::copyMakeBorder(iSrc, oDst, m, m, n, n, cv::BORDER_REFLECT);
+    cv::Mat tmpSrc = oDst.clone();
+
+    if (iSrc.channels() == 3) {
+        for (int i = m; i < oDst.rows - m; ++i) {
+            for (int j = n; j < oDst.cols - n; ++j) {
+                cv::Vec3d sum1{0.0, 0.0, 0.0}, sum2{0.0, 0.0, 0.0};
+                for (int x = -m; x <= m; x++) {
+                    for (int y = -n; y <= n; y++) {
+                        sum1[0] += pow(tmpSrc.at<cv::Vec3b>(i + x, j + y)[0], q + 1);
+                        sum1[1] += pow(tmpSrc.at<cv::Vec3b>(i + x, j + y)[1], q + 1);
+                        sum1[2] += pow(tmpSrc.at<cv::Vec3b>(i + x, j + y)[2], q + 1);
+                        sum2[0] += pow(tmpSrc.at<cv::Vec3b>(i + x, j + y)[0], q);
+                        sum2[1] += pow(tmpSrc.at<cv::Vec3b>(i + x, j + y)[1], q);
+                        sum2[2] += pow(tmpSrc.at<cv::Vec3b>(i + x, j + y)[2], q);
+                    }
+                }
+                cv::Vec3b sum{
+                    cv::saturate_cast<uchar>(sum1[0] / sum2[0]),
+                    cv::saturate_cast<uchar>(sum1[1] / sum2[1]),
+                    cv::saturate_cast<uchar>(sum1[2] / sum2[2])};
+                oDst.at<cv::Vec3b>(i, j) = sum;
+            }
+        }
+    } else if (iSrc.channels() == 1) {
+        for (int i = m; i < oDst.rows - m; ++i) {
+            for (int j = n; j < oDst.cols - n; ++j) {
+                double sum1 = 0.0, sum2 = 0.0;
+                for (int x = -m; x <= m; x++) {
+                    for (int y = -n; y <= n; y++) {
+                        sum1 += pow(tmpSrc.at<uchar>(i + x, j + y), q + 1);
+                        sum2 += pow(tmpSrc.at<uchar>(i + x, j + y), q);
+                    }
+                }
+                double sum = sum1 / sum2;
                 oDst.at<uchar>(i, j) = cv::saturate_cast<uchar>(sum);
             }
         }

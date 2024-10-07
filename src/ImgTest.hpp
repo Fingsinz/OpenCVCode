@@ -35,6 +35,7 @@ public:
     static void TestArithMeanFilter();
     static void TestGeoMeanFilter();
     static void TestHarmMeanFilter();
+    static void TestAntiHarmeanFilter();
 
 private:
     static cv::Mat src;
