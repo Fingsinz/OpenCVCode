@@ -194,9 +194,9 @@ void ImgProcessor::AddSaltNoice(cv::Mat &iSrc, int iNum) {
 }
 
 void ImgProcessor::MeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, int iFilterSize) {
-    oDst = iSrc.clone();
     int k = (iFilterSize - 1) / 2;
     cv::copyMakeBorder(iSrc, oDst, k, k, k, k, cv::BORDER_REFLECT);
+    cv::Mat tmpSrc = oDst.clone();
 
     if (iSrc.channels() == 3) {
         for (int i = k; i < oDst.rows - k; ++i) {
@@ -205,7 +205,7 @@ void ImgProcessor::MeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, int iFilterSiz
                 // 卷积过程
                 for (int x = -k; x <= k; x++) {
                     for (int y = -k; y <= k; y++) {
-                        sum += oDst.at<cv::Vec3b>(i + x, j + y);
+                        sum += tmpSrc.at<cv::Vec3b>(i + x, j + y);
                     }
                 }
                 oDst.at<cv::Vec3b>(i, j) = cv::Vec3b(
@@ -220,7 +220,7 @@ void ImgProcessor::MeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, int iFilterSiz
                 int sum = 0;
                 for (int x = -k; x <= k; x++) {
                     for (int y = -k; y <= k; y++) {
-                        sum += oDst.at<uchar>(i + x, j + y);
+                        sum += tmpSrc.at<uchar>(i + x, j + y);
                     }
                 }
                 oDst.at<uchar>(i, j) = cv::saturate_cast<uchar>(sum / (iFilterSize * iFilterSize));
@@ -238,9 +238,9 @@ void ImgProcessor::GaussianFilter(
     double iSigmaX,
     double iSigmaY /*= 0.0*/) {
 
-    oDst = iSrc.clone();
     int k = (iFilterSize - 1) / 2;
     cv::copyMakeBorder(iSrc, oDst, k, k, k, k, cv::BORDER_REFLECT);
+    cv::Mat tmpSrc = oDst.clone();
 
     if (iSrc.channels() == 3) {
         for (int i = k; i < oDst.rows - k; ++i) {
@@ -253,7 +253,7 @@ void ImgProcessor::GaussianFilter(
                     for (int y = -k; y <= k; y++) {
                         g = exp(-(x * x + y * y) / (2 * iSigmaX * iSigmaX));
                         sumG += g;
-                        sum += oDst.at<cv::Vec3b>(i + x, j + y) * g;
+                        sum += tmpSrc.at<cv::Vec3b>(i + x, j + y) * g;
                     }
                 }
                 oDst.at<cv::Vec3b>(i, j) = cv::Vec3b(
@@ -272,7 +272,7 @@ void ImgProcessor::GaussianFilter(
                     for (int y = -k; y <= k; y++) {
                         g = exp(-(x * x + y * y) / (2 * iSigmaX * iSigmaX));
                         sumG += g;
-                        sum += oDst.at<uchar>(i + x, j + y) * g;
+                        sum += tmpSrc.at<uchar>(i + x, j + y) * g;
                     }
                 }
                 oDst.at<uchar>(i, j) = cv::saturate_cast<uchar>(sum / sumG);
@@ -284,9 +284,9 @@ void ImgProcessor::GaussianFilter(
 }
 
 void ImgProcessor::MedianFilter(cv::Mat const &iSrc, cv::Mat &oDst, int iFilterSize) {
-    oDst = iSrc.clone();
     int k = (iFilterSize - 1) / 2;
     cv::copyMakeBorder(iSrc, oDst, k, k, k, k, cv::BORDER_REFLECT);
+    cv::Mat tmpSrc = oDst.clone();
 
     if (iSrc.channels() == 3) {
         std::vector<cv::Vec3b> tmp(iFilterSize * iFilterSize);
@@ -296,7 +296,7 @@ void ImgProcessor::MedianFilter(cv::Mat const &iSrc, cv::Mat &oDst, int iFilterS
                 tmp.clear();
                 for (int x = -k; x <= k; x++) {
                     for (int y = -k; y <= k; y++) {
-                        tmp.push_back(oDst.at<cv::Vec3b>(i + x, j + y));
+                        tmp.push_back(tmpSrc.at<cv::Vec3b>(i + x, j + y));
                     }
                 }
                 std::sort(tmp.begin(), tmp.end(), [&](cv::Vec3b a, cv::Vec3b b) {
@@ -313,7 +313,7 @@ void ImgProcessor::MedianFilter(cv::Mat const &iSrc, cv::Mat &oDst, int iFilterS
                 tmp.clear();
                 for (int x = -k; x <= k; x++) {
                     for (int y = -k; y <= k; y++) {
-                        tmp.push_back(oDst.at<uchar>(i + x, j + y));
+                        tmp.push_back(tmpSrc.at<uchar>(i + x, j + y));
                     }
                 }
                 std::sort(tmp.begin(), tmp.end());
