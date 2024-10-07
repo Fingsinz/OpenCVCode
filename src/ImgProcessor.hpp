@@ -97,4 +97,14 @@ public:
      * @param[in] iFilterSize 滤波器的 size
      */
     static void MedianFilter(cv::Mat const &iSrc, cv::Mat &oDst, int iFilterSize);
+
+    /**
+     * @brief Laplacian滤波
+     * @details
+     * @param[in] iSrc 输入图像
+     * @param[out] oDst 输出图像
+     * @param[in] iFilterSize 滤波器的 size
+     * @param[in] iAll 是否八邻域拉普拉斯核
+     */
+    static void LaplacianFilter(cv::Mat const &iSrc, cv::Mat &oDst, bool ibAll = false);
 };

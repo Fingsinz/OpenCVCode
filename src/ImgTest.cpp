@@ -15,9 +15,13 @@ ImgTest::~ImgTest() {
     cv::destroyAllWindows();
 }
 
-void ImgTest::GetSrc() {
+void ImgTest::GetSrc(bool ibFlag) {
     src.release();
-    src = cv::imread("../../res/lena.jpg");
+    if (ibFlag) {
+        src = cv::imread("../../res/lena.jpg", cv::IMREAD_COLOR);
+    } else {
+        src = cv::imread("../../res/lena.jpg", cv::IMREAD_GRAYSCALE);
+    }
 }
 
 void ImgTest::ShowResult() {
@@ -98,4 +102,17 @@ void ImgTest::TestMedianFilter() {
     // OpenCV 内置函数
     cv::medianBlur(src, tmp, 5);
     cv::imshow("median blur", tmp);
+}
+
+void ImgTest::TestLaplacianFilter() {
+    cv::Mat tmp1, tmp2, tmp3;
+
+    ImgProcessor::LaplacianFilter(src, tmp1, false);
+    ImgProcessor::LaplacianFilter(src, tmp2, true);
+    // OpenCV 内置函数
+    cv::Laplacian(src, dst, CV_8UC3, 3, 1, 0, cv::BORDER_REFLECT);
+    dst += src;
+
+    cv::imshow("4-filter", tmp1);
+    cv::imshow("8-filter", tmp2);
 }

@@ -8,7 +8,7 @@ public:
     ~ImgTest();
 
 public:
-    static void GetSrc();
+    static void GetSrc(bool ibFlag = true);
     static void ShowResult();
 
     // 灰度变换
@@ -25,6 +25,9 @@ public:
     static void TestMeanFilter();
     static void TestGaussianFilter();
     static void TestMedianFilter();
+    
+    // 高通空间滤波器
+    static void TestLaplacianFilter();
 
 private:
     static cv::Mat src;

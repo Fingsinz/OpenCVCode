@@ -6,6 +6,7 @@
 #include "opencv2/core/matx.hpp"
 #include "opencv2/core/saturate.hpp"
 #include "opencv2/imgproc.hpp"
+#include <iostream>
 #include <random>
 #include <vector>
 
@@ -323,4 +324,109 @@ void ImgProcessor::MedianFilter(cv::Mat const &iSrc, cv::Mat &oDst, int iFilterS
     }
 
     oDst = oDst(cv::Rect(k, k, iSrc.cols, iSrc.rows));
+}
+
+void ImgProcessor::LaplacianFilter(cv::Mat const &iSrc, cv::Mat &oDst, bool ibAll /*= false*/) {
+    auto filter4 = [](cv::Mat const &iSrc, cv::Mat &oDst) {
+        cv::copyMakeBorder(iSrc, oDst, 1, 1, 1, 1, cv::BORDER_REFLECT);
+        cv::Mat tmp = oDst.clone();
+
+        if (iSrc.channels() == 3) {
+            cv::Vec3i la{0, 0, 0};
+            for (int i = 1; i < oDst.rows - 1; i++) {
+                for (int j = 1; j < oDst.cols - 1; j++) {
+                    // 拉普拉斯核
+                    // 0  1  0
+                    // 1 -4  1
+                    // 0  1  0
+                    la[0] = tmp.at<cv::Vec3b>(i + 1, j)[0] + tmp.at<cv::Vec3b>(i - 1, j)[0] +
+                        tmp.at<cv::Vec3b>(i, j + 1)[0] + tmp.at<cv::Vec3b>(i, j - 1)[0] -
+                        4 * tmp.at<cv::Vec3b>(i, j)[0];
+                    la[1] = tmp.at<cv::Vec3b>(i + 1, j)[1] + tmp.at<cv::Vec3b>(i - 1, j)[1] +
+                        tmp.at<cv::Vec3b>(i, j + 1)[1] + tmp.at<cv::Vec3b>(i, j - 1)[1] -
+                        4 * tmp.at<cv::Vec3b>(i, j)[1];
+                    la[2] = tmp.at<cv::Vec3b>(i + 1, j)[2] + tmp.at<cv::Vec3b>(i - 1, j)[2] +
+                        tmp.at<cv::Vec3b>(i, j + 1)[2] + tmp.at<cv::Vec3b>(i, j - 1)[2] -
+                        4 * tmp.at<cv::Vec3b>(i, j)[2];
+
+                    oDst.at<cv::Vec3b>(i, j)[0] = cv::saturate_cast<uchar>(oDst.at<cv::Vec3b>(i, j)[0] - la[0]);
+                    oDst.at<cv::Vec3b>(i, j)[1] = cv::saturate_cast<uchar>(oDst.at<cv::Vec3b>(i, j)[1] - la[1]);
+                    oDst.at<cv::Vec3b>(i, j)[2] = cv::saturate_cast<uchar>(oDst.at<cv::Vec3b>(i, j)[2] - la[2]);
+                }
+            }
+        } else if (iSrc.channels() == 1) {
+            for (int i = 1; i < oDst.rows - 1; i++) {
+                for (int j = 1; j < oDst.cols - 1; j++) {
+                    // 拉普拉斯核
+                    // 0  -1  0
+                    // -1  4  -1
+                    // 0  -1  0
+                    int la = 4 * tmp.at<uchar>(i, j) - tmp.at<uchar>(i + 1, j) - tmp.at<uchar>(i - 1, j) -
+                        tmp.at<uchar>(i, j + 1) - tmp.at<uchar>(i, j - 1);
+
+                    oDst.at<uchar>(i, j) = cv::saturate_cast<uchar>(oDst.at<uchar>(i, j) + la);
+                }
+            }
+        }
+
+        oDst = oDst(cv::Rect(1, 1, iSrc.cols, iSrc.rows));
+    };
+
+    auto filter8 = [](cv::Mat const &iSrc, cv::Mat &oDst) {
+        cv::copyMakeBorder(iSrc, oDst, 1, 1, 1, 1, cv::BORDER_REFLECT);
+        cv::Mat tmp = oDst.clone();
+
+        if (iSrc.channels() == 3) {
+            cv::Vec3i la{0, 0, 0};
+            for (int i = 1; i < oDst.rows - 1; i++) {
+                for (int j = 1; j < oDst.cols - 1; j++) {
+                    // 拉普拉斯核
+                    // -1 -1 -1
+                    // -1  8 -1
+                    // -1 -1 -1
+                    la[0] = 8 * tmp.at<cv::Vec3b>(i, j)[0] - tmp.at<cv::Vec3b>(i - 1, j - 1)[0] -
+                        tmp.at<cv::Vec3b>(i - 1, j)[0] - tmp.at<cv::Vec3b>(i - 1, j + 1)[0] -
+                        tmp.at<cv::Vec3b>(i, j - 1)[0] - tmp.at<cv::Vec3b>(i, j + 1)[0] -
+                        tmp.at<cv::Vec3b>(i + 1, j - 1)[0] - tmp.at<cv::Vec3b>(i + 1, j)[0] -
+                        tmp.at<cv::Vec3b>(i + 1, j + 1)[0];
+                    la[1] = 8 * tmp.at<cv::Vec3b>(i, j)[1] - tmp.at<cv::Vec3b>(i - 1, j - 1)[1] -
+                        tmp.at<cv::Vec3b>(i - 1, j)[1] - tmp.at<cv::Vec3b>(i - 1, j + 1)[1] -
+                        tmp.at<cv::Vec3b>(i, j - 1)[1] - tmp.at<cv::Vec3b>(i, j + 1)[1] -
+                        tmp.at<cv::Vec3b>(i + 1, j - 1)[1] - tmp.at<cv::Vec3b>(i + 1, j)[1] -
+                        tmp.at<cv::Vec3b>(i + 1, j + 1)[1];
+                    la[2] = 8 * tmp.at<cv::Vec3b>(i, j)[2] - tmp.at<cv::Vec3b>(i - 1, j - 1)[2] -
+                        tmp.at<cv::Vec3b>(i - 1, j)[2] - tmp.at<cv::Vec3b>(i - 1, j + 1)[2] -
+                        tmp.at<cv::Vec3b>(i, j - 1)[2] - tmp.at<cv::Vec3b>(i, j + 1)[2] -
+                        tmp.at<cv::Vec3b>(i + 1, j - 1)[2] - tmp.at<cv::Vec3b>(i + 1, j)[2] -
+                        tmp.at<cv::Vec3b>(i + 1, j + 1)[2];
+
+                    oDst.at<cv::Vec3b>(i, j)[0] = cv::saturate_cast<uchar>(oDst.at<cv::Vec3b>(i, j)[0] + la[0]);
+                    oDst.at<cv::Vec3b>(i, j)[1] = cv::saturate_cast<uchar>(oDst.at<cv::Vec3b>(i, j)[1] + la[1]);
+                    oDst.at<cv::Vec3b>(i, j)[2] = cv::saturate_cast<uchar>(oDst.at<cv::Vec3b>(i, j)[2] + la[2]);
+                }
+            }
+        } else if (iSrc.channels() == 1) {
+            for (int i = 1; i < oDst.rows - 1; i++) {
+                for (int j = 1; j < oDst.cols - 1; j++) {
+                    // 拉普拉斯核
+                    // -1 -1 -1
+                    // -1  8 -1
+                    // -1 -1 -1
+                    int la = 8 * oDst.at<uchar>(i, j) - tmp.at<uchar>(i - 1, j - 1) - tmp.at<uchar>(i - 1, j) -
+                        tmp.at<uchar>(i - 1, j + 1) - tmp.at<uchar>(i, j - 1) - tmp.at<uchar>(i, j + 1) -
+                        tmp.at<uchar>(i + 1, j - 1) - tmp.at<uchar>(i + 1, j) - tmp.at<uchar>(i + 1, j + 1);
+
+                    oDst.at<uchar>(i, j) = cv::saturate_cast<uchar>(oDst.at<uchar>(i, j) + la);
+                }
+            }
+        }
+
+        oDst = oDst(cv::Rect(1, 1, iSrc.cols, iSrc.rows));
+    };
+
+    if (ibAll) {
+        filter8(iSrc, oDst);
+    } else {
+        filter4(iSrc, oDst);
+    }
 }
