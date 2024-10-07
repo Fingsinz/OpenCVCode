@@ -45,6 +45,7 @@ public:
 
     // 自适应滤波器
     static void TestAdaptiveLocalFilter();
+    static void TestAdaptiveMedianFilter();
 
 private:
     static cv::Mat src;

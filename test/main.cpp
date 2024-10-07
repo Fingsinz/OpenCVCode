@@ -2,7 +2,7 @@
 
 int main(int argc, char const *argv[]) {
     // 获取原图像
-    ImgTest::GetSrc();
+    ImgTest::GetSrc(false);
 
     // // 进行灰度变换测试
     // ImgTest::TestGrayInversion();
@@ -38,7 +38,8 @@ int main(int argc, char const *argv[]) {
     // ImgTest::TestModifiedAlphaMeanFilter();
 
     // // 进行自适应滤波器测试
-    ImgTest::TestAdaptiveLocalFilter();
+    // ImgTest::TestAdaptiveLocalFilter();
+    ImgTest::TestAdaptiveMedianFilter();
 
     return 0;
 }

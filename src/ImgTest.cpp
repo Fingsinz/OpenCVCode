@@ -362,3 +362,21 @@ void ImgTest::TestAdaptiveLocalFilter() {
     cv::waitKey(0);
     cv::destroyAllWindows();
 }
+
+void ImgTest::TestAdaptiveMedianFilter() {
+        dst.release();
+    cv::Mat saltImg = src.clone();
+
+    ImgNoice::AddSaltNoice(saltImg, 5000);
+    ImgProcessor::AdaptiveMedianFilter(saltImg, dst, 5);
+
+    cv::Mat tmp;
+    // OpenCV 内置函数
+    cv::blur(saltImg, tmp, cv::Size(3, 3));
+    cv::imshow("blur", tmp);
+
+    cv::imshow("src", saltImg);
+    cv::imshow("dst", dst);
+    cv::waitKey(0);
+    cv::destroyAllWindows();
+}

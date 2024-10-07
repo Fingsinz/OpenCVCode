@@ -184,4 +184,13 @@ public:
      * @param[in] iFilterSize 滤波器的 size
      */
     static void AdaptiveLocalFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize);
+
+    /**
+     * @brief 自适应中值滤波
+     * @details
+     * @param[in] iSrc 输入图像
+     * @param[out] oDst 输出图像
+     * @param[in] iMaxSize 最大尺寸
+     */
+    static void AdaptiveMedianFilter(cv::Mat const &iSrc, cv::Mat &oDst, int iMaxSize);
 };
