@@ -1,4 +1,5 @@
 ﻿#include "ImgTest.hpp"
+#include "ImgNoice.hpp"
 #include "ImgProcessor.hpp"
 #include "opencv2/core/mat.hpp"
 #include "opencv2/core/types.hpp"
@@ -70,7 +71,7 @@ void ImgTest::TestHistMatch() {
 
 void ImgTest::TestMeanFilter() {
     dst.release();
-    ImgProcessor::AddSaltNoice(src, 5000);
+    ImgNoice::AddSaltNoice(src, 5000);
 
     ImgProcessor::MeanFilter(src, dst, 5);
 
@@ -82,7 +83,7 @@ void ImgTest::TestMeanFilter() {
 
 void ImgTest::TestGaussianFilter() {
     dst.release();
-    ImgProcessor::AddSaltNoice(src, 5000);
+    ImgNoice::AddSaltNoice(src, 5000);
 
     ImgProcessor::GaussianFilter(src, dst, 5, 7.0);
 
@@ -94,7 +95,7 @@ void ImgTest::TestGaussianFilter() {
 
 void ImgTest::TestMedianFilter() {
     dst.release();
-    ImgProcessor::AddSaltNoice(src, 5000);
+    ImgNoice::AddSaltNoice(src, 5000);
 
     ImgProcessor::MedianFilter(src, dst, 5);
 

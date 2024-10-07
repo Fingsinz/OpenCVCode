@@ -57,14 +57,6 @@ public:
     static void HistMatch(cv::Mat const &src, cv::Mat const &pattern, cv::Mat &dst);
 
     /**
-     * @brief 添加椒盐噪声
-     * @details
-     * @param[in,out] iSrc 输入图像
-     * @param[in] iNum 椒盐噪声的个数
-     */
-    static void AddSaltNoice(cv::Mat &iSrc, int iNum);
-
-    /**
      * @brief 均值滤波
      * @details
      * @param[in] iSrc 输入图像
