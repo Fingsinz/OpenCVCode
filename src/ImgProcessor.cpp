@@ -6,7 +6,6 @@
 #include "opencv2/core/matx.hpp"
 #include "opencv2/core/saturate.hpp"
 #include "opencv2/imgproc.hpp"
-#include <iostream>
 #include <random>
 #include <vector>
 
@@ -143,30 +142,30 @@ void ImgProcessor::HistMatch(cv::Mat const &src, cv::Mat const &pattern, cv::Mat
     // 计算两个均衡化图像直方图的累积概率
     float hist1Rate[256] = {hist1.at<float>(0)};
     float hist2Rate[256] = {hist2.at<float>(0)};
-    for (int i = 1; i < 256; i++) {
+    for (int i = 1; i < 256; ++i) {
         hist1Rate[i] = hist1Rate[i - 1] + hist1.at<float>(i);
         hist2Rate[i] = hist2Rate[i - 1] + hist2.at<float>(i);
     }
 
-    for (int i = 0; i < 256; i++) {
+    for (int i = 0; i < 256; ++i) {
         hist1Rate[i] /= (equalizeHist1.rows * equalizeHist1.cols);
         hist2Rate[i] /= (equalizeHist2.rows * equalizeHist2.cols);
     }
 
     // 两个累计概率之间的差值，用于找到最接近的点
     float diff[256][256];
-    for (int i = 0; i < 256; i++) {
-        for (int j = 0; j < 256; j++) {
+    for (int i = 0; i < 256; ++i) {
+        for (int j = 0; j < 256; ++j) {
             diff[i][j] = fabs(hist1Rate[i] - hist2Rate[j]);
         }
     }
 
     cv::Mat lut(1, 256, CV_8U);
-    for (int i = 0; i < 256; i++) {
+    for (int i = 0; i < 256; ++i) {
         // 查找源灰度级为i的映射灰度和i的累积概率差最小(灰度接近)的规定化灰度
         float min = diff[i][0];
         int idx = 0;
-        for (int j = 0; j < 256; j++) {
+        for (int j = 0; j < 256; ++j) {
             if (min > diff[i][j]) {
                 min = diff[i][j];
                 idx = j;
@@ -200,8 +199,8 @@ void ImgProcessor::MeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, int iFilterSiz
     cv::copyMakeBorder(iSrc, oDst, k, k, k, k, cv::BORDER_REFLECT);
 
     if (iSrc.channels() == 3) {
-        for (int i = k; i < oDst.rows - k; i++) {
-            for (int j = k; j < oDst.cols - k; j++) {
+        for (int i = k; i < oDst.rows - k; ++i) {
+            for (int j = k; j < oDst.cols - k; ++j) {
                 cv::Vec3i sum{0, 0, 0};
                 // 卷积过程
                 for (int x = -k; x <= k; x++) {
@@ -216,8 +215,8 @@ void ImgProcessor::MeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, int iFilterSiz
             }
         }
     } else if (iSrc.channels() == 1) {
-        for (int i = k; i < oDst.rows - k; i++) {
-            for (int j = k; j < oDst.cols - k; j++) {
+        for (int i = k; i < oDst.rows - k; ++i) {
+            for (int j = k; j < oDst.cols - k; ++j) {
                 int sum = 0;
                 for (int x = -k; x <= k; x++) {
                     for (int y = -k; y <= k; y++) {
@@ -244,8 +243,8 @@ void ImgProcessor::GaussianFilter(
     cv::copyMakeBorder(iSrc, oDst, k, k, k, k, cv::BORDER_REFLECT);
 
     if (iSrc.channels() == 3) {
-        for (int i = k; i < oDst.rows - k; i++) {
-            for (int j = k; j < oDst.cols - k; j++) {
+        for (int i = k; i < oDst.rows - k; ++i) {
+            for (int j = k; j < oDst.cols - k; ++j) {
                 cv::Vec3d sum{0.0, 0.0, 0.0};
                 double g;
                 double sumG = 0.0;
@@ -264,8 +263,8 @@ void ImgProcessor::GaussianFilter(
             }
         }
     } else if (iSrc.channels() == 1) {
-        for (int i = k; i < oDst.rows - k; i++) {
-            for (int j = k; j < oDst.cols - k; j++) {
+        for (int i = k; i < oDst.rows - k; ++i) {
+            for (int j = k; j < oDst.cols - k; ++j) {
                 double sum = 0.0;
                 double g;
                 double sumG = 0.0;
@@ -292,8 +291,8 @@ void ImgProcessor::MedianFilter(cv::Mat const &iSrc, cv::Mat &oDst, int iFilterS
     if (iSrc.channels() == 3) {
         std::vector<cv::Vec3b> tmp(iFilterSize * iFilterSize);
 
-        for (int i = k; i < oDst.rows - k; i++) {
-            for (int j = k; j < oDst.cols - k; j++) {
+        for (int i = k; i < oDst.rows - k; ++i) {
+            for (int j = k; j < oDst.cols - k; ++j) {
                 tmp.clear();
                 for (int x = -k; x <= k; x++) {
                     for (int y = -k; y <= k; y++) {
@@ -309,8 +308,8 @@ void ImgProcessor::MedianFilter(cv::Mat const &iSrc, cv::Mat &oDst, int iFilterS
     } else if (iSrc.channels() == 1) {
         std::vector<uchar> tmp(iFilterSize * iFilterSize);
 
-        for (int i = k; i < oDst.rows - k; i++) {
-            for (int j = k; j < oDst.cols - k; j++) {
+        for (int i = k; i < oDst.rows - k; ++i) {
+            for (int j = k; j < oDst.cols - k; ++j) {
                 tmp.clear();
                 for (int x = -k; x <= k; x++) {
                     for (int y = -k; y <= k; y++) {
@@ -333,8 +332,8 @@ void ImgProcessor::LaplacianFilter(cv::Mat const &iSrc, cv::Mat &oDst, bool ibAl
 
         if (iSrc.channels() == 3) {
             cv::Vec3i la{0, 0, 0};
-            for (int i = 1; i < oDst.rows - 1; i++) {
-                for (int j = 1; j < oDst.cols - 1; j++) {
+            for (int i = 1; i < oDst.rows - 1; ++i) {
+                for (int j = 1; j < oDst.cols - 1; ++j) {
                     // 拉普拉斯核
                     // 0  1  0
                     // 1 -4  1
@@ -355,8 +354,8 @@ void ImgProcessor::LaplacianFilter(cv::Mat const &iSrc, cv::Mat &oDst, bool ibAl
                 }
             }
         } else if (iSrc.channels() == 1) {
-            for (int i = 1; i < oDst.rows - 1; i++) {
-                for (int j = 1; j < oDst.cols - 1; j++) {
+            for (int i = 1; i < oDst.rows - 1; ++i) {
+                for (int j = 1; j < oDst.cols - 1; ++j) {
                     // 拉普拉斯核
                     // 0  -1  0
                     // -1  4  -1
@@ -378,8 +377,8 @@ void ImgProcessor::LaplacianFilter(cv::Mat const &iSrc, cv::Mat &oDst, bool ibAl
 
         if (iSrc.channels() == 3) {
             cv::Vec3i la{0, 0, 0};
-            for (int i = 1; i < oDst.rows - 1; i++) {
-                for (int j = 1; j < oDst.cols - 1; j++) {
+            for (int i = 1; i < oDst.rows - 1; ++i) {
+                for (int j = 1; j < oDst.cols - 1; ++j) {
                     // 拉普拉斯核
                     // -1 -1 -1
                     // -1  8 -1
@@ -406,8 +405,8 @@ void ImgProcessor::LaplacianFilter(cv::Mat const &iSrc, cv::Mat &oDst, bool ibAl
                 }
             }
         } else if (iSrc.channels() == 1) {
-            for (int i = 1; i < oDst.rows - 1; i++) {
-                for (int j = 1; j < oDst.cols - 1; j++) {
+            for (int i = 1; i < oDst.rows - 1; ++i) {
+                for (int j = 1; j < oDst.cols - 1; ++j) {
                     // 拉普拉斯核
                     // -1 -1 -1
                     // -1  8 -1
