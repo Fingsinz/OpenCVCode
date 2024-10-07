@@ -5,6 +5,7 @@
 #include "opencv2/core/mat.hpp"
 #include "opencv2/core/matx.hpp"
 #include "opencv2/core/saturate.hpp"
+#include "opencv2/imgcodecs.hpp"
 #include "opencv2/imgproc.hpp"
 #include <vector>
 
@@ -454,3 +455,42 @@ auto filter4 = [](cv::Mat const &iSrc, cv::Mat &oDst) {
 
     oDst = oDst(cv::Rect(1, 1, iSrc.cols, iSrc.rows));
 };
+
+void ImgProcessor::ArithmeticMeanFilter(const cv::Mat &iSrc, cv::Mat &oDst, cv::Size iFilterSize) {
+    int m = (iFilterSize.height - 1) / 2;
+    int n = (iFilterSize.width - 1) / 2;
+    int area = iFilterSize.area();
+    cv::copyMakeBorder(iSrc, oDst, m, m, n, n, cv::BORDER_REFLECT);
+    cv::Mat tmpSrc = oDst.clone();
+
+    if (iSrc.channels() == 3) {
+        for (int i = m; i < oDst.rows - m; ++i) {
+            for (int j = n; j < oDst.cols - n; ++j) {
+                cv::Vec3i sum{0, 0, 0};
+                for (int x = -m; x <= m; x++) {
+                    for (int y = -n; y <= n; y++) {
+                        sum += tmpSrc.at<cv::Vec3b>(i + x, j + y);
+                    }
+                }
+                oDst.at<cv::Vec3b>(i, j) = cv::Vec3b(
+                    cv::saturate_cast<uchar>(sum[0] / area),
+                    cv::saturate_cast<uchar>(sum[1] / area),
+                    cv::saturate_cast<uchar>(sum[2] / area));
+            }
+        }
+    } else if (iSrc.channels() == 1) {
+        for (int i = m; i < oDst.rows - m; ++i) {
+            for (int j = n; j < oDst.cols - n; ++j) {
+                int sum = 0;
+                for (int x = -m; x <= m; x++) {
+                    for (int y = -n; y <= n; y++) {
+                        sum += tmpSrc.at<uchar>(i + x, j + y);
+                    }
+                }
+                oDst.at<uchar>(i, j) = cv::saturate_cast<uchar>(sum / area);
+            }
+        }
+    }
+
+    oDst = oDst(cv::Rect(m, n, iSrc.cols, iSrc.rows));
+}

@@ -32,6 +32,9 @@ public:
     // 查看噪声直方图区别
     static void TestNoice();
 
+    // 均值滤波器
+    static void TestArithMeanFilter();
+
 private:
     static cv::Mat src;
     static cv::Mat dst;

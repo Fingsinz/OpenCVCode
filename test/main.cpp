@@ -22,8 +22,11 @@ int main(int argc, char const *argv[]) {
     // // 进行高通滤波器测试
     // ImgTest::TestLaplacianFilter();
     
-    // 进行噪声观察测试
-    ImgTest::TestNoice();
+    // // 进行噪声观察测试
+    // ImgTest::TestNoice();
+
+    // 进行均值滤波器测试
+    ImgTest::TestArithMeanFilter();
 
     return 0;
 }

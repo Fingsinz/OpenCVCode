@@ -151,7 +151,7 @@ void ImgTest::TestNoice() {
     ImgNoice::AddGaussianNoice(pic2, 10, 50);
     ImgNoice::AddUniformNoice(pic3, 10, 50);
     cv::rectangle(pic1, cv::Rect(900, 0, 100, 100), cv::Scalar(0, 0, 255), 5);
-    cv::rectangle(pic2, cv::Rect(900, 0, 100, 100), cv::Scalar(0, 0, 255),5);
+    cv::rectangle(pic2, cv::Rect(900, 0, 100, 100), cv::Scalar(0, 0, 255), 5);
     cv::rectangle(pic3, cv::Rect(900, 0, 100, 100), cv::Scalar(0, 0, 255), 5);
 
     cv::namedWindow("椒盐噪声", cv::WINDOW_NORMAL);
@@ -171,4 +171,19 @@ void ImgTest::TestNoice() {
 
     cv::waitKey(0);
     cv::destroyAllWindows();
+}
+
+void ImgTest::TestArithMeanFilter() {
+    dst.release();
+    cv::Mat saltImg = src.clone();
+
+    ImgNoice::AddSaltNoice(saltImg, 5000);
+    ImgProcessor::ArithmeticMeanFilter(saltImg, dst, cv::Size(5, 5));
+
+    cv::Mat tmp;
+    // OpenCV 内置函数
+    cv::blur(saltImg, tmp, cv::Size(5, 5));
+    cv::imshow("blur", tmp);
+
+    ShowResult();
 }
