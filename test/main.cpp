@@ -27,7 +27,8 @@ int main(int argc, char const *argv[]) {
 
     // // 进行均值滤波器测试
     // ImgTest::TestArithMeanFilter();
-    ImgTest::TestGeoMeanFilter();
+    // ImgTest::TestGeoMeanFilter();
+    ImgTest::TestHarmMeanFilter();
 
     return 0;
 }

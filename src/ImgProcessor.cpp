@@ -1,4 +1,5 @@
 ﻿#include "ImgProcessor.hpp"
+#include "ImgTest.hpp"
 #include "opencv2/core.hpp"
 #include "opencv2/core/base.hpp"
 #include "opencv2/core/hal/interface.h"
@@ -455,7 +456,7 @@ auto filter4 = [](cv::Mat const &iSrc, cv::Mat &oDst) {
     oDst = oDst(cv::Rect(1, 1, iSrc.cols, iSrc.rows));
 };
 
-void ImgProcessor::ArithmeticMeanFilter(const cv::Mat &iSrc, cv::Mat &oDst, cv::Size iFilterSize) {
+void ImgProcessor::ArithmeticMeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize) {
     int m = (iFilterSize.height - 1) / 2;
     int n = (iFilterSize.width - 1) / 2;
     int area = iFilterSize.area();
@@ -494,7 +495,7 @@ void ImgProcessor::ArithmeticMeanFilter(const cv::Mat &iSrc, cv::Mat &oDst, cv::
     oDst = oDst(cv::Rect(m, n, iSrc.cols, iSrc.rows));
 }
 
-void ImgProcessor::GeometricMeanFilter(const cv::Mat &iSrc, cv::Mat &oDst, cv::Size iFilterSize) {
+void ImgProcessor::GeometricMeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize) {
     int m = (iFilterSize.height - 1) / 2;
     int n = (iFilterSize.width - 1) / 2;
     int area = iFilterSize.area();
@@ -531,6 +532,48 @@ void ImgProcessor::GeometricMeanFilter(const cv::Mat &iSrc, cv::Mat &oDst, cv::S
                 }
                 sum /= area;
                 oDst.at<uchar>(i, j) = cv::saturate_cast<uchar>(pow(10, sum));
+            }
+        }
+    }
+
+    oDst = oDst(cv::Rect(m, n, iSrc.cols, iSrc.rows));
+}
+
+void ImgProcessor::HarmonicMeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize) {
+    int m = (iFilterSize.height - 1) / 2;
+    int n = (iFilterSize.width - 1) / 2;
+    int area = iFilterSize.area();
+    cv::copyMakeBorder(iSrc, oDst, m, m, n, n, cv::BORDER_REFLECT);
+    cv::Mat tmpSrc = oDst.clone();
+
+    if (iSrc.channels() == 3) {
+        for (int i = m; i < oDst.rows - m; ++i) {
+            for (int j = n; j < oDst.cols - n; ++j) {
+                cv::Vec3d sum{0.0, 0.0, 0.0};
+                for (int x = -m; x <= m; x++) {
+                    for (int y = -n; y <= n; y++) {
+                        sum[0] += 1.0 / (0.1 + tmpSrc.at<cv::Vec3b>(i + x, j + y)[0]);
+                        sum[1] += 1.0 / (0.1 + tmpSrc.at<cv::Vec3b>(i + x, j + y)[1]);
+                        sum[2] += 1.0 / (0.1 + tmpSrc.at<cv::Vec3b>(i + x, j + y)[2]);
+                    }
+                }
+                sum[0] = static_cast<double>(area) / sum[0];
+                sum[1] = static_cast<double>(area) / sum[1];
+                sum[2] = static_cast<double>(area) / sum[2];
+                oDst.at<cv::Vec3b>(i, j) = sum;
+            }
+        }
+    } else if (iSrc.channels() == 1) {
+        for (int i = m; i < oDst.rows - m; ++i) {
+            for (int j = n; j < oDst.cols - n; ++j) {
+                double sum = 0;
+                for (int x = -m; x <= m; x++) {
+                    for (int y = -n; y <= n; y++) {
+                        sum += 1.0 / (0.1 + tmpSrc.at<uchar>(i + x, j + y));
+                    }
+                }
+                sum = static_cast<double>(area) / sum;
+                oDst.at<uchar>(i, j) = cv::saturate_cast<uchar>(sum);
             }
         }
     }

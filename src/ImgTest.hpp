@@ -34,6 +34,7 @@ public:
     // 均值滤波器
     static void TestArithMeanFilter();
     static void TestGeoMeanFilter();
+    static void TestHarmMeanFilter();
 
 private:
     static cv::Mat src;
