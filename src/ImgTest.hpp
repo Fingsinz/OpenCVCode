@@ -29,6 +29,9 @@ public:
     // 高通空间滤波器
     static void TestLaplacianFilter();
 
+    // 查看噪声直方图区别
+    static void TestNoice();
+
 private:
     static cv::Mat src;
     static cv::Mat dst;

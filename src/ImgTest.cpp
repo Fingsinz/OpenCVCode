@@ -29,26 +29,35 @@ void ImgTest::ShowResult() {
     cv::imshow("src", src);
     cv::imshow("dst", dst);
     cv::waitKey(0);
+    cv::destroyAllWindows();
 }
 
 void ImgTest::TestGrayInversion() {
     dst.release();
     ImgProcessor::GrayInversion(src, dst);
+
+    ShowResult();
 }
 
 void ImgTest::TestGrayLogTrans() {
     dst.release();
     ImgProcessor::GrayLogTrans(src, dst, 5.0);
+
+    ShowResult();
 }
 
 void ImgTest::TestGrayGammaTrans() {
     dst.release();
     ImgProcessor::GrayGammaTrans(src, dst, 3.0, 0.9);
+
+    ShowResult();
 }
 
 void ImgTest::TestGetHistogram() {
     dst.release();
     ImgProcessor::GetHistogram(src, dst);
+
+    ShowResult();
 }
 
 void ImgTest::TestHistEqualization() {
@@ -60,6 +69,8 @@ void ImgTest::TestHistEqualization() {
     ImgProcessor::GetHistogram(dst, hist2);
     cv::imshow("hist1", hist1);
     cv::imshow("hist2", hist2);
+
+    ShowResult();
 }
 
 void ImgTest::TestHistMatch() {
@@ -67,42 +78,53 @@ void ImgTest::TestHistMatch() {
     cv::Mat pattern(src.size(), CV_8UC1, cv::Scalar(255));
     ImgProcessor::HistMatch(src, pattern, dst);
     cv::imshow("pattern", pattern);
+
+    ShowResult();
 }
 
 void ImgTest::TestMeanFilter() {
     dst.release();
-    ImgNoice::AddSaltNoice(src, 5000);
+    cv::Mat saltImg = src.clone();
 
-    ImgProcessor::MeanFilter(src, dst, 5);
+    ImgNoice::AddSaltNoice(saltImg, 5000);
+    ImgProcessor::MeanFilter(saltImg, dst, 5);
 
     cv::Mat tmp;
     // OpenCV 内置函数
-    cv::blur(src, tmp, cv::Size(5, 5));
+    cv::blur(saltImg, tmp, cv::Size(5, 5));
     cv::imshow("blur", tmp);
+
+    ShowResult();
 }
 
 void ImgTest::TestGaussianFilter() {
     dst.release();
-    ImgNoice::AddSaltNoice(src, 5000);
+    cv::Mat saltImg = src.clone();
 
-    ImgProcessor::GaussianFilter(src, dst, 5, 7.0);
+    ImgNoice::AddSaltNoice(saltImg, 5000);
+    ImgProcessor::GaussianFilter(saltImg, dst, 5, 7.0);
 
     cv::Mat tmp;
     // OpenCV 内置函数
-    cv::GaussianBlur(src, tmp, cv::Size(5, 5), 7.0);
+    cv::GaussianBlur(saltImg, tmp, cv::Size(5, 5), 7.0);
     cv::imshow("Gaussian blur", tmp);
+
+    ShowResult();
 }
 
 void ImgTest::TestMedianFilter() {
     dst.release();
-    ImgNoice::AddSaltNoice(src, 5000);
+    cv::Mat saltImg = src.clone();
 
-    ImgProcessor::MedianFilter(src, dst, 5);
+    ImgNoice::AddSaltNoice(saltImg, 5000);
+    ImgProcessor::MedianFilter(saltImg, dst, 5);
 
     cv::Mat tmp;
     // OpenCV 内置函数
-    cv::medianBlur(src, tmp, 5);
+    cv::medianBlur(saltImg, tmp, 5);
     cv::imshow("median blur", tmp);
+
+    ShowResult();
 }
 
 void ImgTest::TestLaplacianFilter() {
@@ -116,4 +138,37 @@ void ImgTest::TestLaplacianFilter() {
 
     cv::imshow("4-filter", tmp1);
     cv::imshow("8-filter", tmp2);
+
+    ShowResult();
+}
+
+void ImgTest::TestNoice() {
+    dst.release();
+    src = cv::imread("../../res/test.jpg", cv::IMREAD_GRAYSCALE);
+    cv::Mat pic1 = src.clone(), pic2 = src.clone(), pic3 = src.clone();
+
+    ImgNoice::AddSaltNoice(pic1, 5000);
+    ImgNoice::AddGaussianNoice(pic2, 10, 50);
+    ImgNoice::AddUniformNoice(pic3, 10, 50);
+    cv::rectangle(pic1, cv::Rect(900, 0, 100, 100), cv::Scalar(0, 0, 255), 5);
+    cv::rectangle(pic2, cv::Rect(900, 0, 100, 100), cv::Scalar(0, 0, 255),5);
+    cv::rectangle(pic3, cv::Rect(900, 0, 100, 100), cv::Scalar(0, 0, 255), 5);
+
+    cv::namedWindow("椒盐噪声", cv::WINDOW_NORMAL);
+    cv::namedWindow("高斯噪声", cv::WINDOW_NORMAL);
+    cv::namedWindow("均匀噪声", cv::WINDOW_NORMAL);
+    cv::imshow("椒盐噪声", pic1);
+    cv::imshow("高斯噪声", pic2);
+    cv::imshow("均匀噪声", pic3);
+
+    cv::Mat hist1, hist2, hist3;
+    ImgProcessor::GetHistogram(pic1(cv::Rect(900, 0, 100, 100)), hist1);
+    ImgProcessor::GetHistogram(pic2(cv::Rect(900, 0, 100, 100)), hist2);
+    ImgProcessor::GetHistogram(pic3(cv::Rect(900, 0, 100, 100)), hist3);
+    cv::imshow("椒盐噪声直方图", hist1);
+    cv::imshow("高斯噪声直方图", hist2);
+    cv::imshow("均匀噪声直方图", hist3);
+
+    cv::waitKey(0);
+    cv::destroyAllWindows();
 }
