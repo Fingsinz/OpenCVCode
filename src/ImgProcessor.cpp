@@ -626,3 +626,47 @@ void ImgProcessor::AntiHarmonicMeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv
 
     oDst = oDst(cv::Rect(m, n, iSrc.cols, iSrc.rows));
 }
+
+void ImgProcessor::MedianFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize) {
+    int m = (iFilterSize.height - 1) / 2;
+    int n = (iFilterSize.width - 1) / 2;
+    int area = iFilterSize.area();
+    cv::copyMakeBorder(iSrc, oDst, m, m, n, n, cv::BORDER_REFLECT);
+    cv::Mat tmpSrc = oDst.clone();
+
+    if (iSrc.channels() == 3) {
+        std::vector<cv::Vec3b> tmp(area);
+
+        for (int i = m; i < oDst.rows - m; ++i) {
+            for (int j = n; j < oDst.cols - n; ++j) {
+                tmp.clear();
+                for (int x = -m; x <= m; x++) {
+                    for (int y = -n; y <= n; y++) {
+                        tmp.push_back(tmpSrc.at<cv::Vec3b>(i + x, j + y));
+                    }
+                }
+                std::sort(tmp.begin(), tmp.end(), [&](cv::Vec3b a, cv::Vec3b b) {
+                    return a[0] + a[1] + a[2] < b[0] + b[1] + b[2];
+                });
+                oDst.at<cv::Vec3b>(i, j) = tmp[tmp.size() / 2];
+            }
+        }
+    } else if (iSrc.channels() == 1) {
+        std::vector<uchar> tmp(area);
+
+        for (int i = m; i < oDst.rows - m; ++i) {
+            for (int j = n; j < oDst.cols - n; ++j) {
+                tmp.clear();
+                for (int x = -m; x <= m; x++) {
+                    for (int y = -n; y <= n; y++) {
+                        tmp.push_back(tmpSrc.at<uchar>(i + x, j + y));
+                    }
+                }
+                std::sort(tmp.begin(), tmp.end());
+                oDst.at<uchar>(i, j) = tmp[tmp.size() / 2];
+            }
+        }
+    }
+
+    oDst = oDst(cv::Rect(m, n, iSrc.cols, iSrc.rows));
+}

@@ -29,7 +29,10 @@ int main(int argc, char const *argv[]) {
     // ImgTest::TestArithMeanFilter();
     // ImgTest::TestGeoMeanFilter();
     // ImgTest::TestHarmMeanFilter();
-    ImgTest::TestAntiHarmeanFilter();
+    // ImgTest::TestAntiHarmeanFilter();
+
+    // // 进行统计排序滤波器测试
+    ImgTest::TestMedianFilter1();
 
     return 0;
 }

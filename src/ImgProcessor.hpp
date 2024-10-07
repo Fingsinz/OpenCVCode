@@ -137,4 +137,13 @@ public:
      * @param[in] q q 值，用于调整权重
      */
     static void AntiHarmonicMeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize, double q = 0);
+
+    /**
+     * @brief 中值滤波
+     * @details
+     * @param[in] iSrc 输入图像
+     * @param[out] oDst 输出图像
+     * @param[in] iFilterSize 滤波器的 size
+     */
+    static void MedianFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize);
 };

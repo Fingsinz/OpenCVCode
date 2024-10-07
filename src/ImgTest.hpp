@@ -37,6 +37,9 @@ public:
     static void TestHarmMeanFilter();
     static void TestAntiHarmeanFilter();
 
+    // 统计排序滤波器
+    static void TestMedianFilter1();
+
 private:
     static cv::Mat src;
     static cv::Mat dst;
