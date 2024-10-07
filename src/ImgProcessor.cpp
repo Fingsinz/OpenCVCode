@@ -276,10 +276,10 @@ void ImgProcessor::MedianFilter(cv::Mat const &iSrc, cv::Mat &oDst, int iFilterS
 
         for (int i = k; i < oDst.rows - k; ++i) {
             for (int j = k; j < oDst.cols - k; ++j) {
-                tmp.clear();
+                int h = 0;
                 for (int x = -k; x <= k; x++) {
                     for (int y = -k; y <= k; y++) {
-                        tmp.push_back(tmpSrc.at<cv::Vec3b>(i + x, j + y));
+                        tmp[h++] = tmpSrc.at<cv::Vec3b>(i + x, j + y);
                     }
                 }
                 std::sort(tmp.begin(), tmp.end(), [&](cv::Vec3b a, cv::Vec3b b) {
@@ -293,10 +293,10 @@ void ImgProcessor::MedianFilter(cv::Mat const &iSrc, cv::Mat &oDst, int iFilterS
 
         for (int i = k; i < oDst.rows - k; ++i) {
             for (int j = k; j < oDst.cols - k; ++j) {
-                tmp.clear();
+                int h = 0;
                 for (int x = -k; x <= k; x++) {
                     for (int y = -k; y <= k; y++) {
-                        tmp.push_back(tmpSrc.at<uchar>(i + x, j + y));
+                        tmp[h++] = tmpSrc.at<uchar>(i + x, j + y);
                     }
                 }
                 std::sort(tmp.begin(), tmp.end());
@@ -639,10 +639,10 @@ void ImgProcessor::MedianFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFi
 
         for (int i = m; i < oDst.rows - m; ++i) {
             for (int j = n; j < oDst.cols - n; ++j) {
-                tmp.clear();
+                int h = 0;
                 for (int x = -m; x <= m; x++) {
                     for (int y = -n; y <= n; y++) {
-                        tmp.push_back(tmpSrc.at<cv::Vec3b>(i + x, j + y));
+                        tmp[h++] = tmpSrc.at<cv::Vec3b>(i + x, j + y);
                     }
                 }
                 std::sort(tmp.begin(), tmp.end(), [&](cv::Vec3b a, cv::Vec3b b) {
@@ -656,10 +656,10 @@ void ImgProcessor::MedianFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFi
 
         for (int i = m; i < oDst.rows - m; ++i) {
             for (int j = n; j < oDst.cols - n; ++j) {
-                tmp.clear();
+                int h = 0;
                 for (int x = -m; x <= m; x++) {
                     for (int y = -n; y <= n; y++) {
-                        tmp.push_back(tmpSrc.at<uchar>(i + x, j + y));
+                        tmp[h++] = tmpSrc.at<uchar>(i + x, j + y);
                     }
                 }
                 std::sort(tmp.begin(), tmp.end());
@@ -684,10 +684,10 @@ void ImgProcessor::MinMaxFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFi
 
             for (int i = m; i < oDst.rows - m; ++i) {
                 for (int j = n; j < oDst.cols - n; ++j) {
-                    tmp.clear();
+                    int h = 0;
                     for (int x = -m; x <= m; x++) {
                         for (int y = -n; y <= n; y++) {
-                            tmp.push_back(tmpSrc.at<cv::Vec3b>(i + x, j + y));
+                            tmp[h++] = tmpSrc.at<cv::Vec3b>(i + x, j + y);
                         }
                     }
                     std::sort(tmp.begin(), tmp.end(), [&](cv::Vec3b a, cv::Vec3b b) {
@@ -701,10 +701,10 @@ void ImgProcessor::MinMaxFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFi
 
             for (int i = m; i < oDst.rows - m; ++i) {
                 for (int j = n; j < oDst.cols - n; ++j) {
-                    tmp.clear();
+                    int h = 0;
                     for (int x = -m; x <= m; x++) {
                         for (int y = -n; y <= n; y++) {
-                            tmp.push_back(tmpSrc.at<uchar>(i + x, j + y));
+                            tmp[h++] = tmpSrc.at<uchar>(i + x, j + y);
                         }
                     }
                     std::sort(tmp.begin(), tmp.end());
@@ -721,10 +721,10 @@ void ImgProcessor::MinMaxFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFi
 
             for (int i = m; i < oDst.rows - m; ++i) {
                 for (int j = n; j < oDst.cols - n; ++j) {
-                    tmp.clear();
+                    int h = 0;
                     for (int x = -m; x <= m; x++) {
                         for (int y = -n; y <= n; y++) {
-                            tmp.push_back(tmpSrc.at<cv::Vec3b>(i + x, j + y));
+                            tmp[h++] = tmpSrc.at<cv::Vec3b>(i + x, j + y);
                         }
                     }
                     std::sort(tmp.begin(), tmp.end(), [&](cv::Vec3b a, cv::Vec3b b) {
@@ -738,10 +738,10 @@ void ImgProcessor::MinMaxFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFi
 
             for (int i = m; i < oDst.rows - m; ++i) {
                 for (int j = n; j < oDst.cols - n; ++j) {
-                    tmp.clear();
+                    int h = 0;
                     for (int x = -m; x <= m; x++) {
                         for (int y = -n; y <= n; y++) {
-                            tmp.push_back(tmpSrc.at<uchar>(i + x, j + y));
+                            tmp[h++] = tmpSrc.at<uchar>(i + x, j + y);
                         }
                     }
                     std::sort(tmp.begin(), tmp.end());
@@ -772,10 +772,10 @@ void ImgProcessor::MidPointFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size i
 
         for (int i = m; i < oDst.rows - m; ++i) {
             for (int j = n; j < oDst.cols - n; ++j) {
-                tmp.clear();
+                int h = 0;
                 for (int x = -m; x <= m; x++) {
                     for (int y = -n; y <= n; y++) {
-                        tmp.push_back(tmpSrc.at<cv::Vec3b>(i + x, j + y));
+                        tmp[h++] = tmpSrc.at<cv::Vec3b>(i + x, j + y);
                     }
                 }
                 std::sort(tmp.begin(), tmp.end(), [&](cv::Vec3b a, cv::Vec3b b) {
@@ -792,10 +792,10 @@ void ImgProcessor::MidPointFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size i
 
         for (int i = m; i < oDst.rows - m; ++i) {
             for (int j = n; j < oDst.cols - n; ++j) {
-                tmp.clear();
+                int h = 0;
                 for (int x = -m; x <= m; x++) {
                     for (int y = -n; y <= n; y++) {
-                        tmp.push_back(tmpSrc.at<uchar>(i + x, j + y));
+                        tmp[h ++] = tmpSrc.at<uchar>(i + x, j + y);
                     }
                 }
                 std::sort(tmp.begin(), tmp.end());
@@ -807,7 +807,7 @@ void ImgProcessor::MidPointFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size i
     oDst = oDst(cv::Rect(m, n, iSrc.cols, iSrc.rows));
 }
 
-void ImgProcessor::ModifiedAlphaMeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize, double idD) {
+void ImgProcessor::ModifiedAlphaMeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize, int idD) {
     int m = (iFilterSize.height - 1) / 2;
     int n = (iFilterSize.width - 1) / 2;
     int area = iFilterSize.area();

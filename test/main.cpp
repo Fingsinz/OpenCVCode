@@ -35,7 +35,7 @@ int main(int argc, char const *argv[]) {
     // ImgTest::TestMedianFilter1();
     // ImgTest::TestMinMaxFilter();
     // ImgTest::TestMidPointFilter();
-    ImgTest::TestModifiedAlphaMeanFilter();
+    // ImgTest::TestModifiedAlphaMeanFilter();
 
     return 0;
 }
