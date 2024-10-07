@@ -37,5 +37,8 @@ int main(int argc, char const *argv[]) {
     // ImgTest::TestMidPointFilter();
     // ImgTest::TestModifiedAlphaMeanFilter();
 
+    // // 进行自适应滤波器测试
+    ImgTest::TestAdaptiveLocalFilter();
+
     return 0;
 }

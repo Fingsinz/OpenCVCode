@@ -43,6 +43,9 @@ public:
     static void TestMidPointFilter();
     static void TestModifiedAlphaMeanFilter();
 
+    // 自适应滤波器
+    static void TestAdaptiveLocalFilter();
+
 private:
     static cv::Mat src;
     static cv::Mat dst;

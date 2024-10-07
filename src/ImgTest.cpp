@@ -344,3 +344,21 @@ void ImgTest::TestModifiedAlphaMeanFilter() {
     cv::waitKey(0);
     cv::destroyAllWindows();
 }
+
+void ImgTest::TestAdaptiveLocalFilter() {
+        dst.release();
+    cv::Mat saltImg = src.clone();
+
+    ImgNoice::AddGaussianNoice(saltImg);
+    ImgProcessor::AdaptiveLocalFilter(saltImg, dst, cv::Size(5, 5));
+
+    cv::Mat tmp;
+    // OpenCV 内置函数
+    cv::blur(saltImg, tmp, cv::Size(3, 3));
+    cv::imshow("blur", tmp);
+
+    cv::imshow("src", saltImg);
+    cv::imshow("dst", dst);
+    cv::waitKey(0);
+    cv::destroyAllWindows();
+}

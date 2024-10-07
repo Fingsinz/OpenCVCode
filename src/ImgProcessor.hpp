@@ -175,4 +175,13 @@ public:
      * @param[in] idD 邻域 S_{xy} 内删除 g(r,c) 的 d 个最低灰度值和 d 个最高灰度值
      */
     static void ModifiedAlphaMeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize, int idD);
+
+    /**
+     * @brief 自适应局部降噪滤波
+     * @details
+     * @param[in] iSrc 输入图像
+     * @param[out] oDst 输出图像
+     * @param[in] iFilterSize 滤波器的 size
+     */
+    static void AdaptiveLocalFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize);
 };

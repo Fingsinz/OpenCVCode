@@ -795,7 +795,7 @@ void ImgProcessor::MidPointFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size i
                 int h = 0;
                 for (int x = -m; x <= m; x++) {
                     for (int y = -n; y <= n; y++) {
-                        tmp[h ++] = tmpSrc.at<uchar>(i + x, j + y);
+                        tmp[h++] = tmpSrc.at<uchar>(i + x, j + y);
                     }
                 }
                 std::sort(tmp.begin(), tmp.end());
@@ -857,6 +857,85 @@ void ImgProcessor::ModifiedAlphaMeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, c
                     sum += tmp[k];
                 }
                 oDst.at<uchar>(i, j) = cv::saturate_cast<uchar>(sum / (area - 2 * idD));
+            }
+        }
+    }
+
+    oDst = oDst(cv::Rect(m, n, iSrc.cols, iSrc.rows));
+}
+
+void ImgProcessor::AdaptiveLocalFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize) {
+    int m = (iFilterSize.height - 1) / 2;
+    int n = (iFilterSize.width - 1) / 2;
+    int area = iFilterSize.area();
+    cv::copyMakeBorder(iSrc, oDst, m, m, n, n, cv::BORDER_REFLECT);
+    cv::Mat tmpSrc = oDst.clone();
+    cv::Mat srcMean, srcStd, localMean, localStd;
+
+    if (iSrc.channels() == 3) {
+        // 获取全图的均值和标准差
+        cv::meanStdDev(tmpSrc, srcMean, srcStd);
+        cv::Vec3d mean1 = srcMean.at<cv::Vec3d>(0, 0);
+        cv::Vec3d std1 = srcStd.at<cv::Vec3d>(0, 0);
+
+        cv::Mat array(1, area, CV_8UC3);
+        for (int i = m; i < oDst.rows - m; ++i) {
+            for (int j = n; j < oDst.cols - n; ++j) {
+                int h = 0;
+                for (int x = -m; x <= m; x++) {
+                    for (int y = -n; y <= n; y++) {
+                        array.at<cv::Vec3b>(h++) = tmpSrc.at<cv::Vec3b>(i + x, j + y);
+                    }
+                }
+                // 获取局部均值和标准差
+                cv::meanStdDev(array, localMean, localStd);
+                cv::Vec3d mean2 = localMean.at<cv::Vec3d>(0, 0);
+                cv::Vec3d std2 = localStd.at<cv::Vec3d>(0, 0);
+
+                // 进行计算
+                cv::Vec3d k;
+                k[0] = (std1[0] * std1[0]) / (std2[0] * std2[0] + 0.00001);
+                k[1] = (std1[1] * std1[1]) / (std2[1] * std2[1] + 0.00001);
+                k[2] = (std1[2] * std1[2]) / (std2[2] * std2[2] + 0.00001);
+                if (k[0] <= 1 && k[1] <= 1 && k[2] <= 1) {
+                    oDst.at<cv::Vec3b>(i, j)[0] = cv::saturate_cast<uchar>(
+                        tmpSrc.at<cv::Vec3b>(i, j)[0] - k[0] * (tmpSrc.at<cv::Vec3b>(i, j)[0] - mean2[0]));
+                    oDst.at<cv::Vec3b>(i, j)[1] = cv::saturate_cast<uchar>(
+                        tmpSrc.at<cv::Vec3b>(i, j)[1] - k[1] * (tmpSrc.at<cv::Vec3b>(i, j)[1] - mean2[1]));
+                    oDst.at<cv::Vec3b>(i, j)[2] = cv::saturate_cast<uchar>(
+                        tmpSrc.at<cv::Vec3b>(i, j)[2] - k[2] * (tmpSrc.at<cv::Vec3b>(i, j)[2] - mean2[2]));
+                } else {
+                    oDst.at<cv::Vec3b>(i, j)[0] = cv::saturate_cast<uchar>(mean2[0]);
+                    oDst.at<cv::Vec3b>(i, j)[1] = cv::saturate_cast<uchar>(mean2[1]);
+                    oDst.at<cv::Vec3b>(i, j)[2] = cv::saturate_cast<uchar>(mean2[2]);
+                }
+            }
+        }
+    } else if (iSrc.channels() == 1) {
+        cv::meanStdDev(tmpSrc, srcMean, srcStd);
+        double mean1 = srcMean.at<double>(0, 0);
+        double std1 = srcStd.at<double>(0, 0);
+        cv::Mat array(1, area, CV_8UC1);
+
+        for (int i = m; i < oDst.rows - m; ++i) {
+            for (int j = n; j < oDst.cols - n; ++j) {
+                int h = 0;
+                for (int x = -m; x <= m; x++) {
+                    for (int y = -n; y <= n; y++) {
+                        array.at<uchar>(h++) = tmpSrc.at<uchar>(i + x, j + y);
+                    }
+                }
+                cv::meanStdDev(array, localMean, localStd);
+                double mean2 = localMean.at<double>(0, 0);
+                double std2 = localStd.at<double>(0, 0);
+
+                double k = (std1 * std1) / (std2 * std2 + 0.00001);
+                if (k <= 1) {
+                    oDst.at<uchar>(i, j) =
+                        cv::saturate_cast<uchar>(tmpSrc.at<uchar>(i, j) - k * (tmpSrc.at<uchar>(i, j) - mean2));
+                } else {
+                    oDst.at<uchar>(i, j) = cv::saturate_cast<uchar>(mean2);
+                }
             }
         }
     }
