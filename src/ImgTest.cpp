@@ -25,39 +25,44 @@ void ImgTest::GetSrc(bool ibFlag) {
     }
 }
 
-void ImgTest::ShowResult() {
+void ImgTest::TestGrayInversion() {
+    dst.release();
+    ImgProcessor::GrayInversion(src, dst);
+
     cv::imshow("src", src);
     cv::imshow("dst", dst);
     cv::waitKey(0);
     cv::destroyAllWindows();
 }
 
-void ImgTest::TestGrayInversion() {
-    dst.release();
-    ImgProcessor::GrayInversion(src, dst);
-
-    ShowResult();
-}
-
 void ImgTest::TestGrayLogTrans() {
     dst.release();
     ImgProcessor::GrayLogTrans(src, dst, 5.0);
 
-    ShowResult();
+    cv::imshow("src", src);
+    cv::imshow("dst", dst);
+    cv::waitKey(0);
+    cv::destroyAllWindows();
 }
 
 void ImgTest::TestGrayGammaTrans() {
     dst.release();
     ImgProcessor::GrayGammaTrans(src, dst, 3.0, 0.9);
 
-    ShowResult();
+    cv::imshow("src", src);
+    cv::imshow("dst", dst);
+    cv::waitKey(0);
+    cv::destroyAllWindows();
 }
 
 void ImgTest::TestGetHistogram() {
     dst.release();
     ImgProcessor::GetHistogram(src, dst);
 
-    ShowResult();
+    cv::imshow("src", src);
+    cv::imshow("dst", dst);
+    cv::waitKey(0);
+    cv::destroyAllWindows();
 }
 
 void ImgTest::TestHistEqualization() {
@@ -70,7 +75,10 @@ void ImgTest::TestHistEqualization() {
     cv::imshow("hist1", hist1);
     cv::imshow("hist2", hist2);
 
-    ShowResult();
+    cv::imshow("src", src);
+    cv::imshow("dst", dst);
+    cv::waitKey(0);
+    cv::destroyAllWindows();
 }
 
 void ImgTest::TestHistMatch() {
@@ -79,7 +87,10 @@ void ImgTest::TestHistMatch() {
     ImgProcessor::HistMatch(src, pattern, dst);
     cv::imshow("pattern", pattern);
 
-    ShowResult();
+    cv::imshow("src", src);
+    cv::imshow("dst", dst);
+    cv::waitKey(0);
+    cv::destroyAllWindows();
 }
 
 void ImgTest::TestMeanFilter() {
@@ -94,7 +105,10 @@ void ImgTest::TestMeanFilter() {
     cv::blur(saltImg, tmp, cv::Size(5, 5));
     cv::imshow("blur", tmp);
 
-    ShowResult();
+    cv::imshow("src", saltImg);
+    cv::imshow("dst", dst);
+    cv::waitKey(0);
+    cv::destroyAllWindows();
 }
 
 void ImgTest::TestGaussianFilter() {
@@ -109,7 +123,10 @@ void ImgTest::TestGaussianFilter() {
     cv::GaussianBlur(saltImg, tmp, cv::Size(5, 5), 7.0);
     cv::imshow("Gaussian blur", tmp);
 
-    ShowResult();
+    cv::imshow("src", saltImg);
+    cv::imshow("dst", dst);
+    cv::waitKey(0);
+    cv::destroyAllWindows();
 }
 
 void ImgTest::TestMedianFilter() {
@@ -124,7 +141,10 @@ void ImgTest::TestMedianFilter() {
     cv::medianBlur(saltImg, tmp, 5);
     cv::imshow("median blur", tmp);
 
-    ShowResult();
+    cv::imshow("src", saltImg);
+    cv::imshow("dst", dst);
+    cv::waitKey(0);
+    cv::destroyAllWindows();
 }
 
 void ImgTest::TestLaplacianFilter() {
@@ -139,11 +159,15 @@ void ImgTest::TestLaplacianFilter() {
     cv::imshow("4-filter", tmp1);
     cv::imshow("8-filter", tmp2);
 
-    ShowResult();
+    cv::imshow("src", src);
+    cv::imshow("dst", dst);
+    cv::waitKey(0);
+    cv::destroyAllWindows();
 }
 
 void ImgTest::TestNoice() {
     dst.release();
+    src.release();
     src = cv::imread("../../res/test.jpg", cv::IMREAD_GRAYSCALE);
     cv::Mat pic1 = src.clone(), pic2 = src.clone(), pic3 = src.clone();
 
@@ -171,6 +195,8 @@ void ImgTest::TestNoice() {
 
     cv::waitKey(0);
     cv::destroyAllWindows();
+    src.release();
+    GetSrc();
 }
 
 void ImgTest::TestArithMeanFilter() {
@@ -185,5 +211,26 @@ void ImgTest::TestArithMeanFilter() {
     cv::blur(saltImg, tmp, cv::Size(5, 5));
     cv::imshow("blur", tmp);
 
-    ShowResult();
+    cv::imshow("src", saltImg);
+    cv::imshow("dst", dst);
+    cv::waitKey(0);
+    cv::destroyAllWindows();
+}
+
+void ImgTest::TestGeoMeanFilter() {
+    dst.release();
+    cv::Mat saltImg = src.clone();
+
+    ImgNoice::AddSaltNoice(saltImg, 5000);
+    ImgProcessor::GeometricMeanFilter(saltImg, dst, cv::Size(5, 5));
+
+    cv::Mat tmp;
+    // OpenCV 内置函数
+    cv::blur(saltImg, tmp, cv::Size(5, 5));
+    cv::imshow("blur", tmp);
+
+    cv::imshow("src", saltImg);
+    cv::imshow("dst", dst);
+    cv::waitKey(0);
+    cv::destroyAllWindows();
 }

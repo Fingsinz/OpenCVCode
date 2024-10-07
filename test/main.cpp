@@ -25,8 +25,9 @@ int main(int argc, char const *argv[]) {
     // // 进行噪声观察测试
     // ImgTest::TestNoice();
 
-    // 进行均值滤波器测试
-    ImgTest::TestArithMeanFilter();
+    // // 进行均值滤波器测试
+    // ImgTest::TestArithMeanFilter();
+    ImgTest::TestGeoMeanFilter();
 
     return 0;
 }

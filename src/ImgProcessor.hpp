@@ -108,4 +108,13 @@ public:
      * @param[in] iFilterSize 滤波器的 size
      */
     static void ArithmeticMeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize);
+
+    /**
+     * @brief 几何均值滤波
+     * @details
+     * @param[in] iSrc 输入图像
+     * @param[out] oDst 输出图像
+     * @param[in] iFilterSize 滤波器的 size
+     */
+    static void GeometricMeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize);
 };

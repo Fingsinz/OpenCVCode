@@ -9,7 +9,6 @@ public:
 
 public:
     static void GetSrc(bool ibFlag = true);
-    static void ShowResult();
 
     // 灰度变换
     static void TestGrayInversion();
@@ -34,6 +33,7 @@ public:
 
     // 均值滤波器
     static void TestArithMeanFilter();
+    static void TestGeoMeanFilter();
 
 private:
     static cv::Mat src;

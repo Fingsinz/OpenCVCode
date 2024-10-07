@@ -5,7 +5,6 @@
 #include "opencv2/core/mat.hpp"
 #include "opencv2/core/matx.hpp"
 #include "opencv2/core/saturate.hpp"
-#include "opencv2/imgcodecs.hpp"
 #include "opencv2/imgproc.hpp"
 #include <vector>
 
@@ -488,6 +487,50 @@ void ImgProcessor::ArithmeticMeanFilter(const cv::Mat &iSrc, cv::Mat &oDst, cv::
                     }
                 }
                 oDst.at<uchar>(i, j) = cv::saturate_cast<uchar>(sum / area);
+            }
+        }
+    }
+
+    oDst = oDst(cv::Rect(m, n, iSrc.cols, iSrc.rows));
+}
+
+void ImgProcessor::GeometricMeanFilter(const cv::Mat &iSrc, cv::Mat &oDst, cv::Size iFilterSize) {
+    int m = (iFilterSize.height - 1) / 2;
+    int n = (iFilterSize.width - 1) / 2;
+    int area = iFilterSize.area();
+    cv::copyMakeBorder(iSrc, oDst, m, m, n, n, cv::BORDER_REFLECT);
+    cv::Mat tmpSrc = oDst.clone();
+
+    if (iSrc.channels() == 3) {
+        for (int i = m; i < oDst.rows - m; ++i) {
+            for (int j = n; j < oDst.cols - n; ++j) {
+                cv::Vec3d sum{0.0, 0.0, 0.0};
+                for (int x = -m; x <= m; x++) {
+                    for (int y = -n; y <= n; y++) {
+                        // 对数运算，避免数值连乘过大
+                        sum[0] += log10(0.1 + tmpSrc.at<cv::Vec3b>(i + x, j + y)[0]);
+                        sum[1] += log10(0.1 + tmpSrc.at<cv::Vec3b>(i + x, j + y)[1]);
+                        sum[2] += log10(0.1 + tmpSrc.at<cv::Vec3b>(i + x, j + y)[2]);
+                    }
+                }
+                sum /= area;
+                oDst.at<cv::Vec3b>(i, j) = cv::Vec3b(
+                    cv::saturate_cast<uchar>(pow(10, sum[0])),
+                    cv::saturate_cast<uchar>(pow(10, sum[1])),
+                    cv::saturate_cast<uchar>(pow(10, sum[2])));
+            }
+        }
+    } else if (iSrc.channels() == 1) {
+        for (int i = m; i < oDst.rows - m; ++i) {
+            for (int j = n; j < oDst.cols - n; ++j) {
+                double sum = 0;
+                for (int x = -m; x <= m; x++) {
+                    for (int y = -n; y <= n; y++) {
+                        sum += log10(0.1 + tmpSrc.at<uchar>(i + x, j + y));
+                    }
+                }
+                sum /= area;
+                oDst.at<uchar>(i, j) = cv::saturate_cast<uchar>(pow(10, sum));
             }
         }
     }
