@@ -156,4 +156,13 @@ public:
      * @param[in] ibMax 是否求最大值
      */
     static void MinMaxFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize, bool ibMax = true);
+
+    /**
+     * @brief 中点滤波
+     * @details
+     * @param[in] iSrc 输入图像
+     * @param[out] oDst 输出图像
+     * @param[in] iFilterSize 滤波器的 size
+     */
+    static void MidPointFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize);
 };

@@ -40,6 +40,7 @@ public:
     // 统计排序滤波器
     static void TestMedianFilter1();
     static void TestMinMaxFilter();
+    static void TestMidPointFilter();
 
 private:
     static cv::Mat src;
