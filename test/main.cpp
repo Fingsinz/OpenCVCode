@@ -32,7 +32,8 @@ int main(int argc, char const *argv[]) {
     // ImgTest::TestAntiHarmeanFilter();
 
     // // 进行统计排序滤波器测试
-    ImgTest::TestMedianFilter1();
+    // ImgTest::TestMedianFilter1();
+    ImgTest::TestMinMaxFilter();
 
     return 0;
 }

@@ -288,3 +288,23 @@ void ImgTest::TestMedianFilter1() {
     cv::waitKey(0);
     cv::destroyAllWindows();
 }
+
+void ImgTest::TestMinMaxFilter() {
+    dst.release();
+    cv::Mat saltImg = src.clone();
+    cv::Mat pepperImg = src.clone();
+
+    ImgNoice::AddSaltNoice(saltImg, 5000);
+    ImgNoice::AddPepperNoice(pepperImg, 5000);
+
+    cv::Mat out1, out2;
+    ImgProcessor::MinMaxFilter(pepperImg, out1, cv::Size(5, 5), true);
+    ImgProcessor::MinMaxFilter(saltImg, out2, cv::Size(5, 5), false);
+
+    cv::imshow("带盐噪声", saltImg);
+    cv::imshow("带胡椒噪声", pepperImg);
+    cv::imshow("去胡椒噪声", out1);
+    cv::imshow("去盐噪声", out2);
+    cv::waitKey(0);
+    cv::destroyAllWindows();
+}

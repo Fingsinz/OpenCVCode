@@ -12,6 +12,13 @@ public:
     static void AddSaltNoice(cv::Mat &iSrc, int iNum);
 
     /**
+     * @brief 加胡椒噪声
+     * @param[in, out] iSrc 输入输出图像
+     * @param iNum 胡椒噪声的数量
+     */
+    static void AddPepperNoice(cv::Mat &iSrc, int iNum);
+
+    /**
      * @brief 加高斯噪声
      * @param[in, out] iSrc 输入输出图像
      * @param mean 高斯分布的均值
