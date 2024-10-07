@@ -41,6 +41,7 @@ public:
     static void TestMedianFilter1();
     static void TestMinMaxFilter();
     static void TestMidPointFilter();
+    static void TestModifiedAlphaMeanFilter();
 
 private:
     static cv::Mat src;

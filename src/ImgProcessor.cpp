@@ -806,3 +806,60 @@ void ImgProcessor::MidPointFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size i
 
     oDst = oDst(cv::Rect(m, n, iSrc.cols, iSrc.rows));
 }
+
+void ImgProcessor::ModifiedAlphaMeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize, double idD) {
+    int m = (iFilterSize.height - 1) / 2;
+    int n = (iFilterSize.width - 1) / 2;
+    int area = iFilterSize.area();
+    cv::copyMakeBorder(iSrc, oDst, m, m, n, n, cv::BORDER_REFLECT);
+    cv::Mat tmpSrc = oDst.clone();
+
+    if (iSrc.channels() == 3) {
+        std::vector<cv::Vec3b> tmp(area);
+
+        for (int i = m; i < oDst.rows - m; ++i) {
+            for (int j = n; j < oDst.cols - n; ++j) {
+                int h = 0;
+                for (int x = -m; x <= m; x++) {
+                    for (int y = -n; y <= n; y++) {
+                        tmp[h++] = tmpSrc.at<cv::Vec3b>(i + x, j + y);
+                    }
+                }
+                std::sort(tmp.begin(), tmp.end(), [&](cv::Vec3b a, cv::Vec3b b) {
+                    return a[0] + a[1] + a[2] < b[0] + b[1] + b[2];
+                });
+
+                cv::Vec3i sum{0, 0, 0};
+                for (int k = idD; k < area - idD; ++k) {
+                    sum += tmp[k];
+                }
+
+                oDst.at<cv::Vec3b>(i, j) = cv::Vec3b(
+                    cv::saturate_cast<uchar>(sum[0] / (area - 2 * idD)),
+                    cv::saturate_cast<uchar>(sum[1] / (area - 2 * idD)),
+                    cv::saturate_cast<uchar>(sum[2] / (area - 2 * idD)));
+            }
+        }
+    } else if (iSrc.channels() == 1) {
+        std::vector<uchar> tmp(area);
+
+        for (int i = m; i < oDst.rows - m; ++i) {
+            for (int j = n; j < oDst.cols - n; ++j) {
+                int h = 0;
+                for (int x = -m; x <= m; x++) {
+                    for (int y = -n; y <= n; y++) {
+                        tmp[h++] = tmpSrc.at<uchar>(i + x, j + y);
+                    }
+                }
+                std::sort(tmp.begin(), tmp.end());
+                int sum = 0;
+                for (int k = idD; k < area - idD; ++k) {
+                    sum += tmp[k];
+                }
+                oDst.at<uchar>(i, j) = cv::saturate_cast<uchar>(sum / (area - 2 * idD));
+            }
+        }
+    }
+
+    oDst = oDst(cv::Rect(m, n, iSrc.cols, iSrc.rows));
+}

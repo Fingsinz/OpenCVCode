@@ -165,4 +165,14 @@ public:
      * @param[in] iFilterSize 滤波器的 size
      */
     static void MidPointFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize);
+
+    /**
+     * @brief 修正阿尔法均值滤波
+     * @details
+     * @param[in] iSrc 输入图像
+     * @param[out] oDst 输出图像
+     * @param[in] iFilterSize 滤波器的 size
+     * @param[in] idD alpha值
+     */
+    static void ModifiedAlphaMeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize, double idD);
 };
