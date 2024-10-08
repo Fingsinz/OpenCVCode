@@ -2,7 +2,7 @@
 
 int main(int argc, char const *argv[]) {
     // 获取原图像
-    ImgTest::GetSrc(false);
+    ImgTest::GetSrc();
 
     // // 进行灰度变换测试
     // ImgTest::TestGrayInversion();

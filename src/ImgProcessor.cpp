@@ -8,6 +8,7 @@
 #include "opencv2/imgproc.hpp"
 #include <algorithm>
 #include <functional>
+#include <iostream>
 #include <vector>
 
 void ImgProcessor::GrayInversion(cv::Mat const &src, cv::Mat &dst) {
@@ -950,86 +951,54 @@ void ImgProcessor::AdaptiveMedianFilter(cv::Mat const &iSrc, cv::Mat &oDst, int 
     cv::copyMakeBorder(iSrc, oDst, m, m, m, m, cv::BORDER_REFLECT);
     cv::Mat tmpSrc = oDst.clone();
 
-    if (iSrc.channels() == 3) {
-        std::function<cv::Vec3b(cv::Mat const &, int, int, int, int)> getAdaptiveMedian =
-            [&getAdaptiveMedian](cv::Mat const &iSrc, int i, int j, int iFilterSize, int iMaxSize) -> cv::Vec3b {
-            int area = iFilterSize * iFilterSize;
-            int m = (iFilterSize - 1) / 2;
-            std::vector<cv::Vec3b> array(area);
+    std::function<uchar(cv::Mat const &, int, int, int, int)> getAdaptiveMedian =
+        [&getAdaptiveMedian](cv::Mat const &iSrc, int i, int j, int iFilterSize, int iMaxSize) -> uchar {
+        int area = iFilterSize * iFilterSize;
+        int m = (iFilterSize - 1) / 2;
+        std::vector<uchar> array(area);
 
-            int h = 0;
-            for (int x = -m; x <= m; x++) {
-                for (int y = -m; y <= m; y++) {
-                    array[h++] = iSrc.at<uchar>(i + x, j + y);
-                }
+        int h = 0;
+        for (int x = -m; x <= m; x++) {
+            for (int y = -m; y <= m; y++) {
+                array[h++] = iSrc.at<uchar>(i + x, j + y);
             }
+        }
 
-            // 三通道图像像素大小比较没有比较好的方式，故效果不佳
-            std::sort(array.begin(), array.end(), [](cv::Vec3b a, cv::Vec3b b) {
-                return (a[0] + a[1] + a[2]) < (b[0] + b[1] + b[2]);
-            });
-            cv::Vec3b zMin = array[0];
-            cv::Vec3b zMid = array[(area - 1) / 2];
-            cv::Vec3b zMax = array[area - 1];
-            cv::Vec3b zXy = iSrc.at<cv::Vec3b>(i, j);
+        std::sort(array.begin(), array.end());
+        uchar zMin = array[0];
+        uchar zMid = array[(area - 1) / 2];
+        uchar zMax = array[area - 1];
+        uchar zXy = iSrc.at<uchar>(i, j);
 
-            if (zMid[0] > zMin[0] && zMid[0] < zMax[0]) {
-                if (zXy[0] > zMin[0] && zXy[0] < zMax[0]) {
-                    return zXy;
-                } else {
-                    return zMid;
-                }
+        if (zMid > zMin && zMid < zMax) {
+            if (zXy > zMin && zXy < zMax) {
+                return zXy;
             } else {
-                iFilterSize += 2;
-                if (iFilterSize <= iMaxSize) {
-                    return getAdaptiveMedian(iSrc, i, j, iFilterSize, iMaxSize);
-                } else {
-                    return zMid;
-                }
+                return zMid;
             }
-        };
+        } else {
+            iFilterSize += 2;
+            if (iFilterSize <= iMaxSize) {
+                return getAdaptiveMedian(iSrc, i, j, iFilterSize, iMaxSize);
+            } else {
+                return zMid;
+            }
+        }
+    };
 
+    if (iSrc.channels() == 3) {
+        std::vector<cv::Mat> srcBGR;
+        cv::split(tmpSrc, srcBGR);
+        std::cout << "Split\n";
         for (int i = m; i < oDst.rows - m; ++i) {
             for (int j = m; j < oDst.cols - m; ++j) {
                 int filterSize = 3;
-                oDst.at<cv::Vec3b>(i, j) = getAdaptiveMedian(tmpSrc, i, j, filterSize, iMaxSize);
+                oDst.at<cv::Vec3b>(i, j)[0] = getAdaptiveMedian(srcBGR[0], i, j, filterSize, iMaxSize);
+                oDst.at<cv::Vec3b>(i, j)[1] = getAdaptiveMedian(srcBGR[1], i, j, filterSize, iMaxSize);
+                oDst.at<cv::Vec3b>(i, j)[2] = getAdaptiveMedian(srcBGR[2], i, j, filterSize, iMaxSize);
             }
         }
     } else if (iSrc.channels() == 1) {
-        std::function<uchar(cv::Mat const &, int, int, int, int)> getAdaptiveMedian =
-            [&getAdaptiveMedian](cv::Mat const &iSrc, int i, int j, int iFilterSize, int iMaxSize) -> uchar {
-            int area = iFilterSize * iFilterSize;
-            int m = (iFilterSize - 1) / 2;
-            std::vector<uchar> array(area);
-
-            int h = 0;
-            for (int x = -m; x <= m; x++) {
-                for (int y = -m; y <= m; y++) {
-                    array[h++] = iSrc.at<uchar>(i + x, j + y);
-                }
-            }
-
-            std::sort(array.begin(), array.end());
-            int zMin = array[0];
-            int zMid = array[(area - 1) / 2];
-            int zMax = array[area - 1];
-            int zXy = iSrc.at<uchar>(i, j);
-
-            if (zMid > zMin && zMid < zMax) {
-                if (zXy > zMin && zXy < zMax) {
-                    return zXy;
-                } else {
-                    return zMid;
-                }
-            } else {
-                iFilterSize += 2;
-                if (iFilterSize <= iMaxSize) {
-                    return getAdaptiveMedian(iSrc, i, j, iFilterSize, iMaxSize);
-                } else {
-                    return zMid;
-                }
-            }
-        };
 
         for (int i = m; i < oDst.rows - m; ++i) {
             for (int j = m; j < oDst.cols - m; ++j) {
