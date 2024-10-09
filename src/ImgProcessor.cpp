@@ -10,7 +10,8 @@
 #include <functional>
 #include <vector>
 
-void ImgProcessor::GrayInversion(cv::Mat const &src, cv::Mat &dst) {
+namespace ImgProcessor {
+void GrayInversion(cv::Mat const &src, cv::Mat &dst) {
     cv::Mat tmp;
     if (src.channels() == 3) {
         cv::cvtColor(src, tmp, cv::COLOR_BGR2GRAY);
@@ -26,7 +27,7 @@ void ImgProcessor::GrayInversion(cv::Mat const &src, cv::Mat &dst) {
     }
 }
 
-void ImgProcessor::GrayLogTrans(cv::Mat const &src, cv::Mat &dst, double c /*= 1.0*/) {
+void GrayLogTrans(cv::Mat const &src, cv::Mat &dst, double c /*= 1.0*/) {
     cv::Mat tmp;
     if (src.channels() == 3) {
         cv::cvtColor(src, tmp, cv::COLOR_BGR2GRAY);
@@ -46,7 +47,7 @@ void ImgProcessor::GrayLogTrans(cv::Mat const &src, cv::Mat &dst, double c /*= 1
     cv::normalize(dst, dst, 0, 255, cv::NORM_MINMAX, CV_8UC1);
 }
 
-void ImgProcessor::GrayGammaTrans(cv::Mat const &src, cv::Mat &dst, double c /*= 1.0*/, double gamma /*= 1.0*/) {
+void GrayGammaTrans(cv::Mat const &src, cv::Mat &dst, double c /*= 1.0*/, double gamma /*= 1.0*/) {
     cv::Mat tmp;
     if (src.channels() == 3) {
         cv::cvtColor(src, tmp, cv::COLOR_BGR2GRAY);
@@ -66,7 +67,7 @@ void ImgProcessor::GrayGammaTrans(cv::Mat const &src, cv::Mat &dst, double c /*=
     cv::normalize(dst, dst, 0, 255, cv::NORM_MINMAX, CV_8UC1);
 }
 
-void ImgProcessor::GetHistogram(cv::Mat const &src, cv::Mat &dst) {
+void GetHistogram(cv::Mat const &src, cv::Mat &dst) {
     cv::Mat tmp;
     if (src.channels() == 3) {
         cv::cvtColor(src, tmp, cv::COLOR_BGR2GRAY);
@@ -100,7 +101,7 @@ void ImgProcessor::GetHistogram(cv::Mat const &src, cv::Mat &dst) {
     }
 }
 
-void ImgProcessor::HistEqualization(cv::Mat const &src, cv::Mat &dst) {
+void HistEqualization(cv::Mat const &src, cv::Mat &dst) {
     cv::Mat tmp;
     if (src.channels() == 3) {
         cv::cvtColor(src, tmp, cv::COLOR_BGR2GRAY);
@@ -112,7 +113,7 @@ void ImgProcessor::HistEqualization(cv::Mat const &src, cv::Mat &dst) {
     cv::equalizeHist(tmp, dst);
 }
 
-void ImgProcessor::HistMatch(cv::Mat const &src, cv::Mat const &pattern, cv::Mat &dst) {
+void HistMatch(cv::Mat const &src, cv::Mat const &pattern, cv::Mat &dst) {
     cv::Mat tmp;
     if (src.channels() == 3) {
         cv::cvtColor(src, tmp, cv::COLOR_BGR2GRAY);
@@ -178,7 +179,7 @@ void ImgProcessor::HistMatch(cv::Mat const &src, cv::Mat const &pattern, cv::Mat
     cv::LUT(equalizeHist1, lut, dst);
 }
 
-void ImgProcessor::MeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, int iFilterSize) {
+void MeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, int iFilterSize) {
     int k = (iFilterSize - 1) / 2;
     cv::copyMakeBorder(iSrc, oDst, k, k, k, k, cv::BORDER_REFLECT);
     cv::Mat tmpSrc = oDst.clone();
@@ -216,12 +217,7 @@ void ImgProcessor::MeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, int iFilterSiz
     oDst = oDst(cv::Rect(k, k, iSrc.cols, iSrc.rows));
 }
 
-void ImgProcessor::GaussianFilter(
-    cv::Mat const &iSrc,
-    cv::Mat &oDst,
-    int iFilterSize,
-    double iSigmaX,
-    double iSigmaY /*= 0.0*/) {
+void GaussianFilter(cv::Mat const &iSrc, cv::Mat &oDst, int iFilterSize, double iSigmaX, double iSigmaY /*= 0.0*/) {
 
     int k = (iFilterSize - 1) / 2;
     cv::copyMakeBorder(iSrc, oDst, k, k, k, k, cv::BORDER_REFLECT);
@@ -268,7 +264,7 @@ void ImgProcessor::GaussianFilter(
     oDst = oDst(cv::Rect(k, k, iSrc.cols, iSrc.rows));
 }
 
-void ImgProcessor::MedianFilter(cv::Mat const &iSrc, cv::Mat &oDst, int iFilterSize) {
+void MedianFilter(cv::Mat const &iSrc, cv::Mat &oDst, int iFilterSize) {
     int k = (iFilterSize - 1) / 2;
     cv::copyMakeBorder(iSrc, oDst, k, k, k, k, cv::BORDER_REFLECT);
     cv::Mat tmpSrc = oDst.clone();
@@ -310,7 +306,7 @@ void ImgProcessor::MedianFilter(cv::Mat const &iSrc, cv::Mat &oDst, int iFilterS
     oDst = oDst(cv::Rect(k, k, iSrc.cols, iSrc.rows));
 }
 
-void ImgProcessor::LaplacianFilter(cv::Mat const &iSrc, cv::Mat &oDst, bool ibAll /*= false*/) {
+void LaplacianFilter(cv::Mat const &iSrc, cv::Mat &oDst, bool ibAll /*= false*/) {
     auto filter4 = [](cv::Mat const &iSrc, cv::Mat &oDst) {
         cv::copyMakeBorder(iSrc, oDst, 1, 1, 1, 1, cv::BORDER_REFLECT);
         cv::Mat tmp = oDst.clone();
@@ -457,7 +453,7 @@ auto filter4 = [](cv::Mat const &iSrc, cv::Mat &oDst) {
     oDst = oDst(cv::Rect(1, 1, iSrc.cols, iSrc.rows));
 };
 
-void ImgProcessor::ArithmeticMeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize) {
+void ArithmeticMeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize) {
     int m = (iFilterSize.height - 1) / 2;
     int n = (iFilterSize.width - 1) / 2;
     int area = iFilterSize.area();
@@ -496,7 +492,7 @@ void ImgProcessor::ArithmeticMeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::
     oDst = oDst(cv::Rect(m, n, iSrc.cols, iSrc.rows));
 }
 
-void ImgProcessor::GeometricMeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize) {
+void GeometricMeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize) {
     int m = (iFilterSize.height - 1) / 2;
     int n = (iFilterSize.width - 1) / 2;
     int area = iFilterSize.area();
@@ -540,7 +536,7 @@ void ImgProcessor::GeometricMeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::S
     oDst = oDst(cv::Rect(m, n, iSrc.cols, iSrc.rows));
 }
 
-void ImgProcessor::HarmonicMeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize) {
+void HarmonicMeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize) {
     int m = (iFilterSize.height - 1) / 2;
     int n = (iFilterSize.width - 1) / 2;
     int area = iFilterSize.area();
@@ -582,7 +578,7 @@ void ImgProcessor::HarmonicMeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Si
     oDst = oDst(cv::Rect(m, n, iSrc.cols, iSrc.rows));
 }
 
-void ImgProcessor::AntiHarmonicMeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize, double q /*= 0*/) {
+void AntiHarmonicMeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize, double q /*= 0*/) {
     int m = (iFilterSize.height - 1) / 2;
     int n = (iFilterSize.width - 1) / 2;
     int area = iFilterSize.area();
@@ -629,7 +625,7 @@ void ImgProcessor::AntiHarmonicMeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv
     oDst = oDst(cv::Rect(m, n, iSrc.cols, iSrc.rows));
 }
 
-void ImgProcessor::MedianFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize) {
+void MedianFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize) {
     int m = (iFilterSize.height - 1) / 2;
     int n = (iFilterSize.width - 1) / 2;
     int area = iFilterSize.area();
@@ -673,7 +669,7 @@ void ImgProcessor::MedianFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFi
     oDst = oDst(cv::Rect(m, n, iSrc.cols, iSrc.rows));
 }
 
-void ImgProcessor::MinMaxFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize, bool ibMax /*= true*/) {
+void MinMaxFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize, bool ibMax /*= true*/) {
     int m = (iFilterSize.height - 1) / 2;
     int n = (iFilterSize.width - 1) / 2;
     int area = iFilterSize.area();
@@ -762,7 +758,7 @@ void ImgProcessor::MinMaxFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFi
     oDst = oDst(cv::Rect(m, n, iSrc.cols, iSrc.rows));
 }
 
-void ImgProcessor::MidPointFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize) {
+void MidPointFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize) {
     int m = (iFilterSize.height - 1) / 2;
     int n = (iFilterSize.width - 1) / 2;
     int area = iFilterSize.area();
@@ -809,7 +805,7 @@ void ImgProcessor::MidPointFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size i
     oDst = oDst(cv::Rect(m, n, iSrc.cols, iSrc.rows));
 }
 
-void ImgProcessor::ModifiedAlphaMeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize, int idD) {
+void ModifiedAlphaMeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize, int idD) {
     int m = (iFilterSize.height - 1) / 2;
     int n = (iFilterSize.width - 1) / 2;
     int area = iFilterSize.area();
@@ -866,7 +862,7 @@ void ImgProcessor::ModifiedAlphaMeanFilter(cv::Mat const &iSrc, cv::Mat &oDst, c
     oDst = oDst(cv::Rect(m, n, iSrc.cols, iSrc.rows));
 }
 
-void ImgProcessor::AdaptiveLocalFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize) {
+void AdaptiveLocalFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize) {
     int m = (iFilterSize.height - 1) / 2;
     int n = (iFilterSize.width - 1) / 2;
     int area = iFilterSize.area();
@@ -945,7 +941,7 @@ void ImgProcessor::AdaptiveLocalFilter(cv::Mat const &iSrc, cv::Mat &oDst, cv::S
     oDst = oDst(cv::Rect(m, n, iSrc.cols, iSrc.rows));
 }
 
-void ImgProcessor::AdaptiveMedianFilter(cv::Mat const &iSrc, cv::Mat &oDst, int iMaxSize) {
+void AdaptiveMedianFilter(cv::Mat const &iSrc, cv::Mat &oDst, int iMaxSize) {
     int m = (iMaxSize - 1) / 2;
     cv::copyMakeBorder(iSrc, oDst, m, m, m, m, cv::BORDER_REFLECT);
     cv::Mat tmpSrc = oDst.clone();
@@ -1009,7 +1005,7 @@ void ImgProcessor::AdaptiveMedianFilter(cv::Mat const &iSrc, cv::Mat &oDst, int 
     oDst = oDst(cv::Rect(m, m, iSrc.cols, iSrc.rows));
 }
 
-void ImgProcessor::BGR2HSL(cv::Mat const &iSrc, cv::Mat &oDst) {
+void BGR2HSL(cv::Mat const &iSrc, cv::Mat &oDst) {
     if (iSrc.channels() == 1) {
         oDst = iSrc.clone();
         return;
@@ -1032,7 +1028,7 @@ void ImgProcessor::BGR2HSL(cv::Mat const &iSrc, cv::Mat &oDst) {
     }
 }
 
-void ImgProcessor::HSL2BGR(cv::Mat const &iSrc, cv::Mat &oDst) {
+void HSL2BGR(cv::Mat const &iSrc, cv::Mat &oDst) {
     if (iSrc.channels() == 1) {
         oDst = iSrc.clone();
         return;
@@ -1059,3 +1055,5 @@ void ImgProcessor::HSL2BGR(cv::Mat const &iSrc, cv::Mat &oDst) {
         }
     }
 }
+
+} // namespace ImgProcessor

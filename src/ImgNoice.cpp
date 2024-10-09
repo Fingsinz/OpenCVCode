@@ -2,7 +2,8 @@
 #include "opencv2/core.hpp"
 #include <random>
 
-void ImgNoice::AddSaltNoice(cv::Mat &iSrc, int iNum) {
+namespace ImgNoice {
+void AddSaltNoice(cv::Mat &iSrc, int iNum) {
     std::default_random_engine generator;
     std::uniform_int_distribution<int> randomRow(0, iSrc.rows - 1);
     std::uniform_int_distribution<int> randomCol(0, iSrc.cols - 1);
@@ -18,7 +19,7 @@ void ImgNoice::AddSaltNoice(cv::Mat &iSrc, int iNum) {
     }
 }
 
-void ImgNoice::AddPepperNoice(cv::Mat &iSrc, int iNum) {
+void AddPepperNoice(cv::Mat &iSrc, int iNum) {
     std::default_random_engine generator;
     std::uniform_int_distribution<int> randomRow(0, iSrc.rows - 1);
     std::uniform_int_distribution<int> randomCol(0, iSrc.cols - 1);
@@ -34,16 +35,18 @@ void ImgNoice::AddPepperNoice(cv::Mat &iSrc, int iNum) {
     }
 }
 
-void ImgNoice::AddGaussianNoice(cv::Mat &iSrc, double mean /*= 10*/, double sigma /*= 50*/) {
+void AddGaussianNoice(cv::Mat &iSrc, double mean /*= 10*/, double sigma /*= 50*/) {
     cv::RNG rng;
     cv::Mat noice = iSrc.clone();
     rng.fill(noice, cv::RNG::NORMAL, mean, sigma);
     cv::add(iSrc, noice, iSrc);
 }
 
-void ImgNoice::AddUniformNoice(cv::Mat &iSrc, double low /*= 10*/, double high /*= 50*/) {
+void AddUniformNoice(cv::Mat &iSrc, double low /*= 10*/, double high /*= 50*/) {
     cv::RNG rng;
     cv::Mat noice = iSrc.clone();
     rng.fill(noice, cv::RNG::UNIFORM, low, high);
     cv::add(iSrc, noice, iSrc);
 }
+
+} // namespace ImgNoice
