@@ -39,7 +39,10 @@ int main(int argc, char const *argv[]) {
 
     // // 进行自适应滤波器测试
     // ImgTest::TestAdaptiveLocalFilter();
-    ImgTest::TestAdaptiveMedianFilter();
+    // ImgTest::TestAdaptiveMedianFilter();
+
+    // // 进行彩色模型转换测试
+    ImgTest::TestBGRHLS();
 
     return 0;
 }

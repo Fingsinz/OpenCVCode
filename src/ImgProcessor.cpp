@@ -8,7 +8,6 @@
 #include "opencv2/imgproc.hpp"
 #include <algorithm>
 #include <functional>
-#include <iostream>
 #include <vector>
 
 void ImgProcessor::GrayInversion(cv::Mat const &src, cv::Mat &dst) {
@@ -989,7 +988,6 @@ void ImgProcessor::AdaptiveMedianFilter(cv::Mat const &iSrc, cv::Mat &oDst, int 
     if (iSrc.channels() == 3) {
         std::vector<cv::Mat> srcBGR;
         cv::split(tmpSrc, srcBGR);
-        std::cout << "Split\n";
         for (int i = m; i < oDst.rows - m; ++i) {
             for (int j = m; j < oDst.cols - m; ++j) {
                 int filterSize = 3;
@@ -1009,4 +1007,55 @@ void ImgProcessor::AdaptiveMedianFilter(cv::Mat const &iSrc, cv::Mat &oDst, int 
     }
 
     oDst = oDst(cv::Rect(m, m, iSrc.cols, iSrc.rows));
+}
+
+void ImgProcessor::BGR2HSL(cv::Mat const &iSrc, cv::Mat &oDst) {
+    if (iSrc.channels() == 1) {
+        oDst = iSrc.clone();
+        return;
+    }
+
+    oDst = cv::Mat::zeros(iSrc.size(), CV_64FC3);
+    for (int i = 0; i < iSrc.rows; ++i) {
+        for (int j = 0; j < iSrc.cols; ++j) {
+            double r = iSrc.at<cv::Vec3b>(i, j)[2] / 255.0;
+            double g = iSrc.at<cv::Vec3b>(i, j)[1] / 255.0;
+            double b = iSrc.at<cv::Vec3b>(i, j)[0] / 255.0;
+            double theta = 0.5 * ((r - g) + (r - b));
+            theta = theta / pow(((r - g) * (r - g) + (r - b) * (g - b)), 0.5);
+            theta = acos(theta);
+            double h = b <= g ? theta : 360 - theta;
+            double s = 1 - 3.0 * std::min(std::min(r, g), b) / (r + g + b + 0.00001);
+            double l = (b + g + r) / 3.0;
+            oDst.at<cv::Vec3d>(i, j) = cv::Vec3d(h / 360.0, l, s);
+        }
+    }
+}
+
+void ImgProcessor::HSL2BGR(cv::Mat const &iSrc, cv::Mat &oDst) {
+    if (iSrc.channels() == 1) {
+        oDst = iSrc.clone();
+        return;
+    }
+
+    oDst = cv::Mat::zeros(iSrc.size(), CV_8UC3);
+    for (int i = 0; i < iSrc.rows; ++i) {
+        for (int j = 0; j < iSrc.cols; ++j) {
+            double h = iSrc.at<cv::Vec3d>(i, j)[0] * 360;
+            double l = iSrc.at<cv::Vec3d>(i, j)[1];
+            double s = iSrc.at<cv::Vec3d>(i, j)[2];
+            uchar b, g, r;
+            if (h >= 0 && h < 120) {
+
+            } else if (h >= 120 && h < 240) {
+                h -= 120;
+            } else if (h >= 240 && h <= 360) {
+                h -= 240;
+            }
+            b = cv::saturate_cast<uchar>(l * (1 - s));
+            r = cv::saturate_cast<uchar>(l * (1.0 + s * cos(h) / cos(60 - h)));
+            g = cv::saturate_cast<uchar>(3 * l - (r + b));
+            oDst.at<cv::Vec3b>(i, j) = cv::Vec3b(b, g, r);
+        }
+    }
 }

@@ -47,6 +47,9 @@ public:
     static void TestAdaptiveLocalFilter();
     static void TestAdaptiveMedianFilter();
 
+    // 彩色模型转换
+    static void TestBGRHLS();
+
 private:
     static cv::Mat src;
     static cv::Mat dst;

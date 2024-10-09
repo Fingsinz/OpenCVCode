@@ -193,4 +193,20 @@ public:
      * @param[in] iMaxSize 最大尺寸
      */
     static void AdaptiveMedianFilter(cv::Mat const &iSrc, cv::Mat &oDst, int iMaxSize);
+
+    /**
+     * @brief BGR 转换为 HSL
+     * @details
+     * @param[in] iSrc 输入图像
+     * @param[out] oDst 输出图像
+     */
+    static void BGR2HSL(cv::Mat const &iSrc, cv::Mat &oDst);
+
+    /**
+     * @brief HSL 转换为 BGR
+     * @details
+     * @param[in] iSrc 输入图像
+     * @param[out] oDst 输出图像
+     */
+    static void HSL2BGR(cv::Mat const &iSrc, cv::Mat &oDst);
 };

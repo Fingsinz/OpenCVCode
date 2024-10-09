@@ -346,7 +346,7 @@ void ImgTest::TestModifiedAlphaMeanFilter() {
 }
 
 void ImgTest::TestAdaptiveLocalFilter() {
-        dst.release();
+    dst.release();
     cv::Mat saltImg = src.clone();
 
     ImgNoice::AddGaussianNoice(saltImg);
@@ -364,7 +364,7 @@ void ImgTest::TestAdaptiveLocalFilter() {
 }
 
 void ImgTest::TestAdaptiveMedianFilter() {
-        dst.release();
+    dst.release();
     cv::Mat saltImg = src.clone();
 
     ImgNoice::AddSaltNoice(saltImg, 5000);
@@ -377,6 +377,26 @@ void ImgTest::TestAdaptiveMedianFilter() {
 
     cv::imshow("src", saltImg);
     cv::imshow("dst", dst);
+    cv::waitKey(0);
+    cv::destroyAllWindows();
+}
+
+void ImgTest::TestBGRHLS() {
+    dst.release();
+    cv::Mat cvtSrc = src.clone(), cvtDst, mBGR2HLS, mHLS2BGR;
+
+    ImgProcessor::BGR2HSL(src, dst);
+    ImgProcessor::HSL2BGR(dst, mHLS2BGR);
+
+    cv::cvtColor(cvtSrc, cvtDst, cv::COLOR_BGR2HLS);
+    cv::cvtColor(cvtDst, mHLS2BGR, cv::COLOR_HLS2BGR);
+
+    cv::imshow("原图", src);
+    cv::imshow("自实现BGR2HLS", dst);
+    cv::imshow("自实现HSL2BGR", mHLS2BGR);
+    cv::imshow("cv函数BGR2HLS", cvtDst);
+    cv::imshow("cv函数HSL2BGR", mHLS2BGR);
+
     cv::waitKey(0);
     cv::destroyAllWindows();
 }
