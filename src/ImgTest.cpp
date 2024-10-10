@@ -411,7 +411,7 @@ void ImgTest::TestErode() {
     cv::threshold(dst, dst, 100, 255, cv::THRESH_BINARY);
     cv::imshow("二值化", dst);
     ImgProcessor::Erode(src, dst, cv::Size(3, 3), 1, false);
-    cv::imshow("腐蚀2", dst);
+    cv::imshow("腐蚀", dst);
     cv::waitKey(0);
     cv::destroyAllWindows();
 }
