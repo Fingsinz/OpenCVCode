@@ -415,3 +415,19 @@ void ImgTest::TestErode() {
     cv::waitKey(0);
     cv::destroyAllWindows();
 }
+
+void ImgTest::TestDilate()
+{
+    dst.release();
+
+    cv::imshow("原图", src);
+    if (src.channels() == 3) {
+        cv::cvtColor(src, dst, cv::COLOR_BGR2GRAY);
+    }
+    cv::threshold(dst, dst, 100, 255, cv::THRESH_BINARY);
+    cv::imshow("二值化", dst);
+    ImgProcessor::Dilate(src, dst, cv::Size(3, 3), 1, false);
+    cv::imshow("膨胀", dst);
+    cv::waitKey(0);
+    cv::destroyAllWindows();
+}

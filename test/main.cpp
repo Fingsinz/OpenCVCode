@@ -45,7 +45,8 @@ int main(int argc, char const *argv[]) {
     // ImgTest::TestBGRHLS();
 
     // // 进行图像形态学处理测试
-    ImgTest::TestErode();
+    // ImgTest::TestErode();
+    ImgTest::TestDilate();
 
     return 0;
 }
