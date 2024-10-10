@@ -50,6 +50,9 @@ public:
     // 彩色模型转换
     static void TestBGRHLS();
 
+    // 图像形态学处理
+    static void TestErode();
+
 private:
     static cv::Mat src;
     static cv::Mat dst;

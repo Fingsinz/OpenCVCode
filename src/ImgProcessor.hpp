@@ -204,4 +204,15 @@ void BGR2HSL(cv::Mat const &iSrc, cv::Mat &oDst);
  */
 void HSL2BGR(cv::Mat const &iSrc, cv::Mat &oDst);
 
+/**
+ * @brief 膨胀
+ * @details
+ * @param[in] iSrc 输入图像
+ * @param[out] oDst 输出图像
+ * @param[in] iFilterSize 滤波器的 size
+ * @param[in] iNums 膨胀的次数
+ * @param[in] ib3Ch 是否三通道
+ */
+void Erode(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize, int iNums = 1, bool ib3Ch = false);
+
 }; // namespace ImgProcessor

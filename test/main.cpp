@@ -42,7 +42,10 @@ int main(int argc, char const *argv[]) {
     // ImgTest::TestAdaptiveMedianFilter();
 
     // // 进行彩色模型转换测试
-    ImgTest::TestBGRHLS();
+    // ImgTest::TestBGRHLS();
+
+    // // 进行图像形态学处理测试
+    ImgTest::TestErode();
 
     return 0;
 }
