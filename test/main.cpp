@@ -1,5 +1,6 @@
 ﻿#include "../src/ImgTest.hpp"
 
+
 int main(int argc, char const *argv[]) {
     // 获取原图像
     ImgTest::GetSrc();
@@ -46,7 +47,9 @@ int main(int argc, char const *argv[]) {
 
     // // 进行图像形态学处理测试
     // ImgTest::TestErode();
-    ImgTest::TestDilate();
-
+    // ImgTest::TestDilate();
+    // ImgTest::TestOpen();
+    ImgTest::TestClose();
+    
     return 0;
 }

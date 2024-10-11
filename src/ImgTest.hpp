@@ -53,6 +53,8 @@ public:
     // 图像形态学处理
     static void TestErode();
     static void TestDilate();
+    static void TestOpen();
+    static void TestClose();
 
 private:
     static cv::Mat src;

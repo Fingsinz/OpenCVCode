@@ -225,5 +225,26 @@ void Erode(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize, int iNums =
  * @param[in] ib3Ch 是否三通道
  */
 void Dilate(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize, int iNums = 1, bool ib3Ch = false);
+/**
+ * @brief 开操作
+ * @details
+ * @param[in] iSrc 输入图像
+ * @param[out] oDst 输出图像
+ * @param[in] iFilterSize 滤波器的 size
+ * @param[in] iNums 腐蚀和膨胀的次数
+ * @param[in] ib3Ch 是否三通道
+ */
+void OpenOperation(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize, int iNums = 1, bool ib3Ch = false);
+
+/**
+ * @brief 闭操作
+ * @details
+ * @param[in] iSrc 输入图像
+ * @param[out] oDst 输出图像
+ * @param[in] iFilterSize 滤波器的 size
+ * @param[in] iNums 腐蚀和膨胀的次数
+ * @param[in] ib3Ch 是否三通道
+ */
+void CloseOperation(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize, int iNums = 1, bool ib3Ch = false);
 
 }; // namespace ImgProcessor

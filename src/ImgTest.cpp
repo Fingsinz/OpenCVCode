@@ -416,8 +416,7 @@ void ImgTest::TestErode() {
     cv::destroyAllWindows();
 }
 
-void ImgTest::TestDilate()
-{
+void ImgTest::TestDilate() {
     dst.release();
 
     cv::imshow("原图", src);
@@ -428,6 +427,30 @@ void ImgTest::TestDilate()
     cv::imshow("二值化", dst);
     ImgProcessor::Dilate(src, dst, cv::Size(3, 3), 1, false);
     cv::imshow("膨胀", dst);
+    cv::waitKey(0);
+    cv::destroyAllWindows();
+}
+
+void ImgTest::TestOpen() {
+    dst.release();
+    src = cv::imread("../../res/pic2.png", cv::IMREAD_GRAYSCALE);
+    cv::imshow("原图", src);
+    cv::threshold(src, dst, 100, 255, cv::THRESH_BINARY);
+    cv::imshow("二值化", dst);
+    ImgProcessor::OpenOperation(src, dst, cv::Size(3, 3), 1, false);
+    cv::imshow("开操作", dst);
+    cv::waitKey(0);
+    cv::destroyAllWindows();
+}
+
+void ImgTest::TestClose() {
+    dst.release();
+    src = cv::imread("../../res/pic2.png", cv::IMREAD_GRAYSCALE);
+    cv::imshow("原图", src);
+    cv::threshold(src, dst, 100, 255, cv::THRESH_BINARY);
+    cv::imshow("二值化", dst);
+    ImgProcessor::CloseOperation(src, dst, cv::Size(3, 3), 1, false);
+    cv::imshow("闭操作", dst);
     cv::waitKey(0);
     cv::destroyAllWindows();
 }

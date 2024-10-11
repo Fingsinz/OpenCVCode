@@ -1084,8 +1084,54 @@ void Dilate(cv::Mat const &iSrc, cv::Mat &oDst, cv::Size iFilterSize, int iNums 
         // 二值化
         cv::threshold(tmpSrc, tmpSrc, 100, 255, cv::THRESH_BINARY);
     }
-    // 腐蚀
+    // 膨胀
     cv::dilate(tmpSrc, oDst, se, cv::Point(-1, -1), iNums);
+}
+
+void OpenOperation(
+    cv::Mat const &iSrc,
+    cv::Mat &oDst,
+    cv::Size iFilterSize,
+    int iNums /*= 1*/,
+    bool ib3Ch /*= false*/) {
+
+    cv::Mat tmpSrc = iSrc.clone();
+    // 构造结构元
+    cv::Mat se = cv::getStructuringElement(cv::MORPH_RECT, iFilterSize);
+
+    if (!ib3Ch) {
+        if (iSrc.channels() == 3) {
+            cv::cvtColor(iSrc, tmpSrc, cv::COLOR_BGR2GRAY);
+        }
+        // 二值化
+        cv::threshold(tmpSrc, tmpSrc, 100, 255, cv::THRESH_BINARY);
+    }
+
+    cv::erode(tmpSrc, oDst, se, cv::Point(-1, -1), iNums);
+    cv::dilate(tmpSrc, oDst, se, cv::Point(-1, -1), iNums);
+}
+
+void CloseOperation(
+    cv::Mat const &iSrc,
+    cv::Mat &oDst,
+    cv::Size iFilterSize,
+    int iNums /*= 1*/,
+    bool ib3Ch /*= false*/) {
+
+    cv::Mat tmpSrc = iSrc.clone();
+    // 构造结构元
+    cv::Mat se = cv::getStructuringElement(cv::MORPH_RECT, iFilterSize);
+
+    if (!ib3Ch) {
+        if (iSrc.channels() == 3) {
+            cv::cvtColor(iSrc, tmpSrc, cv::COLOR_BGR2GRAY);
+        }
+        // 二值化
+        cv::threshold(tmpSrc, tmpSrc, 100, 255, cv::THRESH_BINARY);
+    }
+
+    cv::dilate(tmpSrc, oDst, se, cv::Point(-1, -1), iNums);
+    cv::erode(tmpSrc, oDst, se, cv::Point(-1, -1), iNums);
 }
 
 } // namespace ImgProcessor
